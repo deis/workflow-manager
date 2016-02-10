@@ -1,0 +1,9 @@
+{
+  "component": {
+    "name": "component",
+    "description": "mock component for v2-beta"
+  },
+  "version": {
+    "version": "v2-beta"
+  }
+}

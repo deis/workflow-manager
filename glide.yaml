@@ -1,0 +1,12 @@
+package: github.com/deis/workflow-manager
+import:
+- package: github.com/gorilla/mux
+- package: github.com/satori/go.uuid
+- package: github.com/arschles/assert
+- package: github.com/kelseyhightower/envconfig
+- package: k8s.io/kubernetes/pkg
+  version: 1.1.7
+  subpackages:
+    - client/unversioned
+    - labels
+    - api
