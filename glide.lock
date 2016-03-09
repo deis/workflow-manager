@@ -1,5 +1,5 @@
-hash: ff89b2f7043fe1556681aadaabcf1827a4f8d389f906f3e0837060c924f47003
-updated: 2016-03-07T15:13:03.623261626-08:00
+hash: 582f1a74bbb94770da262ed7a7eae69eaa844d281bd9691de90e5b6a477da23f
+updated: 2016-03-08T21:29:20.12191823-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c
@@ -15,6 +15,23 @@ imports:
   version: 3e6e67c4dcea3ac2f25fd4731abc0e1deaf36216
   subpackages:
   - spew
+- name: github.com/docker/docker
+  version: 2b27fe17a1b3fb8472fde96d768fa70996adf201
+  subpackages:
+  - pkg/jsonmessage
+  - pkg/mount
+  - pkg/parsers
+  - pkg/symlink
+  - pkg/term
+  - pkg/timeutils
+  - pkg/units
+- name: github.com/docker/libcontainer
+  version: 5dc7ba0f24332273461e45bc49edcb4d5aa6c44c
+  subpackages:
+  - cgroups/fs
+  - configs
+  - cgroups
+  - system
 - name: github.com/emicklei/go-restful
   version: 1f9a0ee00ff93717a275e15b30cf7df356255877
   subpackages:
@@ -58,7 +75,7 @@ imports:
 - name: github.com/juju/ratelimit
   version: 772f5c38e468398c4511514f4f6aa9a4185bc0a0
 - name: github.com/kelseyhightower/envconfig
-  version: e6e597eacaace4d622d896cd9b022276660c2393
+  version: 224e93f15cc827cbc08a7694ba9ab6e7d1c10039
 - name: github.com/matttproud/golang_protobuf_extensions
   version: fc2b8d3a73c4867e51861bbdd5ae3c1f0869dd6a
   subpackages:
@@ -97,7 +114,7 @@ imports:
 - name: gopkg.in/yaml.v2
   version: d466437aa4adc35830964cffc5b5f262c63ddcb4
 - name: k8s.io/kubernetes
-  version: e4e6878293a339e4087dae684647c9e53f1cf9f0
+  version: a8af33dc07ee08defa2d503f81e7deea32dd1d3b
   subpackages:
   - client/unversioned
   - labels
