@@ -1,16 +1,16 @@
-sudo: required
-language: go
-go:
-  - 1.5.1
+language: generic
 branches:
   only:
     - master
-env:
-  - DEIS_REGISTRY=travis-ci/
+cache:
+  directories:
+    - vendor
+services:
+  - docker
 install:
-  - make docker-build
+  - make bootstrap
 script:
-  - make test
+  - make test build docker-build
 deploy:
   provider: script
   script: _scripts/deploy.sh
