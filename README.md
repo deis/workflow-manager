@@ -1,6 +1,6 @@
 # Deis Workflow Manager
 
-[![Build Status](https://travis-ci.org/deis/workflow-manager.svg?branch=master)](https://travis-ci.org/deis/workflow-manager) [![Go Report Card](http://goreportcard.com/badge/deis/workflow-manager)](http://goreportcard.com/report/deis/workflow-manager)
+[![Build Status](https://travis-ci.org/deis/workflow-manager.svg?branch=master)](https://travis-ci.org/deis/workflow-manager) [![Go Report Card](https://goreportcard.com/badge/github.com/deis/workflow-manager)](https://goreportcard.com/report/github.com/deis/workflow-manager)
 
 Deis (pronounced DAY-iss) is an open source PaaS that makes it easy to deploy and manage
 applications on your own servers. Deis builds on [Kubernetes](http://kubernetes.io/) to provide
