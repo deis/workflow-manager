@@ -3,9 +3,7 @@ SHORT_NAME := workflow-manager
 # Enable vendor/ directory support.
 export GO15VENDOREXPERIMENT=1
 
-# SemVer with build information is defined in the SemVer 2 spec, but Docker
-# doesn't allow +, so we use -.
-VERSION := git-$(shell git rev-parse --short HEAD)
+include versioning.mk
 
 DEV_ENV_IMAGE := quay.io/deis/go-dev:0.9.0
 DEV_ENV_WORK_DIR := /go/src/github.com/deis/${SHORT_NAME}
@@ -21,11 +19,6 @@ BINDIR := ./rootfs/bin
 ifdef ${DEV_REGISTRY}
   DEIS_REGISTRY = ${DEV_REGISTRY}/
 endif
-
-IMAGE_PREFIX ?= deis/
-
-# Docker image name
-IMAGE := ${DEIS_REGISTRY}${IMAGE_PREFIX}${SHORT_NAME}:${VERSION}
 
 all: build docker-build docker-push
 
@@ -47,7 +40,4 @@ test:
 # We also alter the RC file to set the image name.
 docker-build:
 	docker build --rm -t ${IMAGE} rootfs
-
-# Push to a registry that Kubernetes can access.
-docker-push:
-	docker push ${IMAGE}
+	docker tag -f ${IMAGE} ${MUTABLE_IMAGE}
