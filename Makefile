@@ -31,7 +31,7 @@ bootstrap:
 # the build as a `docker build`.
 build:
 	mkdir -p ${BINDIR}
-	${DEV_ENV_CMD} go build -o ${BINDIR}/boot -a -installsuffix cgo -ldflags ${LDFLAGS} boot.go
+	${DEV_ENV_CMD} go build -o rootfs/bin/boot -a -installsuffix cgo -ldflags ${LDFLAGS} boot.go
 
 test:
 	${DEV_ENV_CMD} sh -c 'go test -v $$(glide nv)'
