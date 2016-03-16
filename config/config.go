@@ -13,7 +13,7 @@ type Specification struct {
 	DeisNamespace  string `default:"deis"`
 }
 
-// Config is an exportable variable that contains workflow manager config data
+// Spec is an exportable variable that contains workflow manager config data
 var Spec Specification
 
 func init() {
