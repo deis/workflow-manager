@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/deis/workflow-manager.svg?branch=master)](https://travis-ci.org/deis/workflow-manager) [![Go Report Card](https://goreportcard.com/badge/github.com/deis/workflow-manager)](https://goreportcard.com/report/github.com/deis/workflow-manager)
 
-This repository contains the manager componetn for Deis Workflow. Deis
+This repository contains the manager component for Deis Workflow. Deis
 (pronounced DAY-iss) Workflow is an open source Platform as a Service (PaaS)
 that adds a developer-friendly layer to any [Kubernetes][k8s-home] cluster,
 making it easy to deploy and manage applications on your own servers.
@@ -38,7 +38,7 @@ help when things aren't going well. To aid troubleshooting efforts cluster
 operators will be able to easily gather and securely submit cluster health and
 status information to the Deis team.
 
-Functionality will be deployed in a later release.
+Functionality will be added in a later release.
 
 # Development
 
@@ -88,3 +88,4 @@ level (functional or integration tests, for example).
 
 [issues]: https://github.com/deis/workflow-manager/issues
 [prs]: https://github.com/deis/workflow-manager/pulls
+[k8s-home]: https://kubernetes.io
