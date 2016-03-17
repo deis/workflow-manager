@@ -64,8 +64,8 @@ installed and Docker installed and running on your local development machine.
 If you don't have Docker installed, please go to https://www.docker.com/ to
 install it.
 
-After you have those dependencies, build your code with `make build` and
-execute unit tests with `make test`.
+After you have those dependencies, bootstrap dependencies with `make bootstrap`,
+build your code with `make build` and execute unit tests with `make test`.
 
 ## Native Go Development Environment
 
