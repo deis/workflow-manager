@@ -24,9 +24,19 @@ component freshness. Workflow Manager will regularly check your cluster against
 the latest stable components. If components are missing due to failure or are
 simply out of date, Workflow operators will know at a glance.
 
+By default, Workflow Manager will make version checks by default. This submits
+component and version information to our versions service running at
+[https://versions.deis.com](https://versions.deis.com). If you prefer this
+check not happen, you may disable the function by setting
+`WORKFLOW_MANAGER_CHECKVERSIONS` to `false` in the Workflow Manager's Replication
+Controller.
+
+
 ## Workflow Doctor
 
 Deployed closest to any potential problem, Workflow Manager is also designed to
 help when things aren't going well. To aid troubleshooting efforts cluster
 operators will be able to easily gather and securely submit cluster health and
 status information to the Deis team.
+
+Functionality will be deployed in a later release.
