@@ -7,6 +7,7 @@
         "description": "deis controller"
       },
       "version": {
+        "train": "stable",
         "version": "2.0.0"
       }
     },
@@ -16,6 +17,7 @@
         "description": "deis router"
       },
       "version": {
+        "train": "stable",
         "version": "2.0.0"
       }
     },
@@ -25,6 +27,7 @@
         "description": "deis builder"
       },
       "version": {
+        "train": "stable",
         "version": "2.0.0"
       }
     }

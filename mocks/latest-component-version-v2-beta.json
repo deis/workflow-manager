@@ -4,6 +4,7 @@
     "description": "mock component for v2-beta"
   },
   "version": {
+    "train": "stable",
     "version": "v2-beta"
   }
 }

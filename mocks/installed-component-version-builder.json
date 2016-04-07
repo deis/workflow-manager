@@ -4,6 +4,7 @@
     "description": "deis builder"
   },
   "version": {
+    "train": "stable",
     "version": "2.0.0"
   }
 }
