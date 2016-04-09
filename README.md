@@ -1,6 +1,7 @@
 # Deis Workflow Manager
 
 [![Build Status](https://travis-ci.org/deis/workflow-manager.svg?branch=master)](https://travis-ci.org/deis/workflow-manager) [![Go Report Card](https://goreportcard.com/badge/github.com/deis/workflow-manager)](https://goreportcard.com/report/github.com/deis/workflow-manager)
+[![Docker Repository on Quay](https://quay.io/repository/deis/workflow-manager/status "Docker Repository on Quay")](https://quay.io/repository/deis/workflow-manager)
 
 This repository contains the manager component for Deis Workflow. Deis
 (pronounced DAY-iss) Workflow is an open source Platform as a Service (PaaS)
