@@ -13,6 +13,7 @@ type Version struct {
 	Train    string `json:"train"` // e.g., "beta", "stable"
 	Version  string `json:"version"`
 	Released string `json:"released,omitempty"`
+	Data     []byte `json:"data"`
 }
 
 // ComponentVersion type definition
