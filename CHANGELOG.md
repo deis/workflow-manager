@@ -1,3 +1,11 @@
+### v2.0.0-beta1 -> v2.0.0-beta2
+
+#### Features
+
+ - [`9ba6db7`](https://github.com/deis/workflow-manager/commit/9ba6db795f8a490d760f11e48ef7070ca832fe22) types: added "train" field to Version
+ - [`b948fbd`](https://github.com/deis/workflow-manager/commit/b948fbd63c93f4d80d928c966bc8679fdcef8cad) _scripts: add CHANGELOG.md and generator script
+ - [`a731083`](https://github.com/deis/workflow-manager/commit/a7310831d52fcd9a3a5f937d0e27943488a29d13) README.md: add quay.io container badge
+
 ### v2.0.0-beta1
 
 #### Features
