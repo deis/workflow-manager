@@ -11,8 +11,3 @@ install:
   - make bootstrap
 script:
   - make test build docker-build
-deploy:
-  provider: script
-  script: _scripts/deploy.sh
-  on:
-    branch: master
