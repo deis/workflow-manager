@@ -5,6 +5,10 @@
   },
   "version": {
     "train": "stable",
-    "version": "v2-beta"
+    "version": "v2-beta",
+    "data": {
+      "description": "release description",
+      "fixes": "list of bug fixes"
+    }
   }
 }
