@@ -25,8 +25,12 @@ type ComponentVersion struct {
 
 // Cluster type definition
 type Cluster struct {
-	ID         string             `json:"id"`
-	FirstSeen  time.Time          `json:"firstSeen"`
-	LastSeen   time.Time          `json:"lastSeen"`
+	ID string `json:"id"`
+	// FirstSeen and/or LastSeen suggests a Cluster object in a lifecycle context,
+	// i.e., for use in business logic which needs to determine a cluster's "freshness" or "staleness"
+	// example use case: we omit these properties when submitting information to the versions API
+	// another example use case: we populate these properties when gathering lifecycle statistics from the API
+	FirstSeen  time.Time          `json:"firstSeen,omitempty"`
+	LastSeen   time.Time          `json:"lastSeen,omitempty"`
 	Components []ComponentVersion `json:"components"`
 }
