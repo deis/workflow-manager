@@ -10,10 +10,10 @@ type Component struct {
 
 // Version type definition
 type Version struct {
-	Train    string `json:"train"` // e.g., "beta", "stable"
-	Version  string `json:"version"`
-	Released string `json:"released,omitempty"`
-	Data     []byte `json:"data"`
+	Train    string                 `json:"train"` // e.g., "beta", "stable"
+	Version  string                 `json:"version"`
+	Released string                 `json:"released,omitempty"`
+	Data     map[string]interface{} `json:"data"`
 }
 
 // ComponentVersion type definition
