@@ -38,6 +38,6 @@ test:
 
 # For cases where we're building from local
 # We also alter the RC file to set the image name.
-docker-build:
+docker-build: build
 	docker build --rm -t ${IMAGE} rootfs
 	docker tag -f ${IMAGE} ${MUTABLE_IMAGE}
