@@ -1,3 +1,18 @@
+### v2.0.0-beta2 -> v2.0.0-beta3
+
+#### Features
+
+ - [`6a7acfe`](https://github.com/deis/workflow-manager/commit/6a7acfe9d13bb7c289d24e3f01b0029c10df0cec) types: add generic data property to types.Version
+
+#### Fixes
+
+ - [`a21b95f`](https://github.com/deis/workflow-manager/commit/a21b95fc764d444a19a375bb1fe99a5c98a67432) rootfs: copy only the built binary in the Dockerfile
+
+#### Maintenance
+
+ - [`61a12e2`](https://github.com/deis/workflow-manager/commit/61a12e2200c7082724fce80213547f04cf50d29e) .travis.yml: Stop deploying images from Travis
+ - [`af030e9`](https://github.com/deis/workflow-manager/commit/af030e9bc7b7379ed15228b7ebbe8431674070c6) changelog: update the changelog for the beta2
+
 ### v2.0.0-beta1 -> v2.0.0-beta2
 
 #### Features
