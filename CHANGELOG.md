@@ -1,3 +1,10 @@
+### v2.0.0-beta3 -> v2.0.0-beta4
+
+#### Documentation
+
+ - [`32f47b8`](https://github.com/deis/workflow-manager/commit/32f47b89c255d05cbcd084f068b09dec94f7ad7b) badge: added code-beat badge
+ - [`23327fa`](https://github.com/deis/workflow-manager/commit/23327faf3659c7a127c300c1a139f8a1f08a26b5) CHANGELOG.md: update for v2.0.0-beta3
+
 ### v2.0.0-beta2 -> v2.0.0-beta3
 
 #### Features
