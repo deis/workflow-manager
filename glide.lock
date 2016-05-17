@@ -1,5 +1,5 @@
-hash: 1bdd73b64b37e6ef42b916a84fef53e8f265c66371579ea7f01e3e390596c4ab
-updated: 2016-05-18T14:54:52.746682984-07:00
+hash: 929f7da17d7a68d7a6e77c06b0709225f61718787f5186f82f8947d4e19d03d5
+updated: 2016-05-17T10:42:42.886666645-06:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c
@@ -13,6 +13,9 @@ imports:
   - api/secret
 - name: github.com/arschles/testsrv
   version: 1ca51fb1a3b6e612411883cf1c9dbc58319b1d5b
+- name: github.com/asaskevich/govalidator
+  version: 9699ab6b38bee2e02cd3fe8b99ecf67665395c96
+  repo: https://github.com/asaskevich/govalidator
 - name: github.com/beorn7/perks
   version: b965b613227fddccbfffe13eae360ed3fa822f8d
   subpackages:
@@ -42,6 +45,16 @@ imports:
   - log
 - name: github.com/ghodss/yaml
   version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
+- name: github.com/go-swagger/go-swagger
+  version: ff42df2bf231f6a12383b36332f8364254ea86d6
+  subpackages:
+  - client
+  - httpkit/client
+  - strfmt
+  - errors
+  - httpkit
+  - httpkit/validate
+  - swag
 - name: github.com/golang/glog
   version: 44145f04b68cf362d9c4df2182967c2275eaefed
 - name: github.com/golang/protobuf
@@ -125,6 +138,7 @@ imports:
   - internal/timeseries
   - trace
   - websocket
+  - context/ctxhttp
 - name: gopkg.in/yaml.v2
   version: d466437aa4adc35830964cffc5b5f262c63ddcb4
 - name: k8s.io/kubernetes
