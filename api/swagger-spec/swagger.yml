@@ -23,7 +23,7 @@ paths:
         200:
           description: component release response
           schema:
-            $ref: "#/definitions/componentDetail"
+            $ref: "#/definitions/componentVersion"
         default:
           description: unexpected error
           schema:
@@ -35,12 +35,12 @@ paths:
         - name: body
           in: body
           schema:
-            $ref: "#/definitions/componentDetail"
+            $ref: "#/definitions/componentVersion"
       responses:
         200:
           description: publish component release response
           schema:
-            $ref: "#/definitions/componentDetail"
+            $ref: "#/definitions/componentVersion"
         default:
           description: unexpected error
           schema:
@@ -61,7 +61,7 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: "#/definitions/componentDetail"
+                  $ref: "#/definitions/componentVersion"
         default:
           description: unexpected error
           schema:
@@ -77,7 +77,7 @@ paths:
         200:
           description: component latest release response
           schema:
-            $ref: "#/definitions/componentDetail"
+            $ref: "#/definitions/componentVersion"
         default:
           description: unexpected error
           schema:
@@ -95,7 +95,7 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: "#/definitions/componentDetail"
+                  $ref: "#/definitions/componentVersion"
       responses:
         200:
           description: component releases response
@@ -105,7 +105,7 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: "#/definitions/componentDetail"
+                  $ref: "#/definitions/componentVersion"
         default:
           description: unexpected error
           schema:
@@ -154,7 +154,7 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: "#/definitions/clusterDetail"
+                  $ref: "#/definitions/cluster"
         default:
           description: unexpected error
           schema:
@@ -172,7 +172,7 @@ paths:
         200:
           description: clusters details response
           schema:
-            $ref: "#/definitions/clusterDetail"
+            $ref: "#/definitions/cluster"
         default:
           description: unexpected error
           schema:
@@ -185,12 +185,12 @@ paths:
         - name: body
           in: body
           schema:
-            $ref: "#/definitions/clusterDetail"
+            $ref: "#/definitions/cluster"
       responses:
         200:
           description: clusters details response
           schema:
-            $ref: "#/definitions/clusterDetail"
+            $ref: "#/definitions/cluster"
         default:
           description: unexpected error
           schema:
@@ -215,7 +215,7 @@ parameters:
     description: The release version of the deis component, eg., 2.0.0-beta2
     required: true
 definitions:
-  clusterDetail:
+  cluster:
     type: object
     required:
       - id
@@ -233,14 +233,16 @@ definitions:
       components:
         type: array
         items:
-          $ref: "#/definitions/componentDetail"
-  componentDetail:
+          $ref: "#/definitions/componentVersion"
+  componentVersion:
     type: object
     properties:
       component:
         $ref: "#/definitions/component"
       version:
         $ref: "#/definitions/version"
+      updateAvailable:
+        type: string
   component:
     type: object
     required:
