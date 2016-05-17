@@ -50,7 +50,7 @@ func NewGetClusterByIDOK() *GetClusterByIDOK {
 clusters details response
 */
 type GetClusterByIDOK struct {
-	Payload *models.ClusterDetail
+	Payload *models.Cluster
 }
 
 func (o *GetClusterByIDOK) Error() string {
@@ -59,7 +59,7 @@ func (o *GetClusterByIDOK) Error() string {
 
 func (o *GetClusterByIDOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.ClusterDetail)
+	o.Payload = new(models.Cluster)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

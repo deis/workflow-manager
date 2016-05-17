@@ -20,7 +20,7 @@ func NewHTTPClient(formats strfmt.Registry) *WorkflowManager {
 	if formats == nil {
 		formats = strfmt.Default
 	}
-	transport := httptransport.New("localhost", "/", []string{"http", "https"})
+	transport := httptransport.New("localhost", "/", []string{"http"})
 	return New(transport, formats)
 }
 

@@ -50,7 +50,7 @@ func NewCreateClusterDetailsOK() *CreateClusterDetailsOK {
 clusters details response
 */
 type CreateClusterDetailsOK struct {
-	Payload *models.ClusterDetail
+	Payload *models.Cluster
 }
 
 func (o *CreateClusterDetailsOK) Error() string {
@@ -59,7 +59,7 @@ func (o *CreateClusterDetailsOK) Error() string {
 
 func (o *CreateClusterDetailsOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.ClusterDetail)
+	o.Payload = new(models.Cluster)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

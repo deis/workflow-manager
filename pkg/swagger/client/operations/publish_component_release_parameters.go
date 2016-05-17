@@ -25,7 +25,7 @@ for the publish component release operation typically these are written to a htt
 type PublishComponentReleaseParams struct {
 
 	/*Body*/
-	Body *models.ComponentDetail
+	Body *models.ComponentVersion
 	/*Component
 	  A component is a single deis component, e.g., deis-router
 
@@ -44,7 +44,7 @@ type PublishComponentReleaseParams struct {
 }
 
 // WithBody adds the body to the publish component release params
-func (o *PublishComponentReleaseParams) WithBody(body *models.ComponentDetail) *PublishComponentReleaseParams {
+func (o *PublishComponentReleaseParams) WithBody(body *models.ComponentVersion) *PublishComponentReleaseParams {
 	o.Body = body
 	return o
 }
@@ -73,7 +73,7 @@ func (o *PublishComponentReleaseParams) WriteToRequest(r client.Request, reg str
 	var res []error
 
 	if o.Body == nil {
-		o.Body = new(models.ComponentDetail)
+		o.Body = new(models.ComponentVersion)
 	}
 
 	if err := r.SetBodyParam(o.Body); err != nil {

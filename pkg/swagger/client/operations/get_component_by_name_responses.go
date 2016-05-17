@@ -117,7 +117,7 @@ type GetComponentByNameOKBodyBody struct {
 
 	Required: true
 	*/
-	Data []*models.ComponentDetail `json:"data"`
+	Data []*models.ComponentVersion `json:"data"`
 }
 
 // Validate validates this get component by name o k body body

@@ -25,11 +25,11 @@ for the create cluster details operation typically these are written to a http.R
 type CreateClusterDetailsParams struct {
 
 	/*Body*/
-	Body *models.ClusterDetail
+	Body *models.Cluster
 }
 
 // WithBody adds the body to the create cluster details params
-func (o *CreateClusterDetailsParams) WithBody(body *models.ClusterDetail) *CreateClusterDetailsParams {
+func (o *CreateClusterDetailsParams) WithBody(body *models.Cluster) *CreateClusterDetailsParams {
 	o.Body = body
 	return o
 }
@@ -40,7 +40,7 @@ func (o *CreateClusterDetailsParams) WriteToRequest(r client.Request, reg strfmt
 	var res []error
 
 	if o.Body == nil {
-		o.Body = new(models.ClusterDetail)
+		o.Body = new(models.Cluster)
 	}
 
 	if err := r.SetBodyParam(o.Body); err != nil {

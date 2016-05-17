@@ -37,7 +37,7 @@ func (a *Client) CreateClusterDetails(params *CreateClusterDetailsParams) (*Crea
 		PathPattern:        "/clusters",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http", "https"},
+		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &CreateClusterDetailsReader{formats: a.formats},
 	})
@@ -62,7 +62,7 @@ func (a *Client) GetClusterByID(params *GetClusterByIDParams) (*GetClusterByIDOK
 		PathPattern:        "/clusters/{id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http", "https"},
+		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &GetClusterByIDReader{formats: a.formats},
 	})
@@ -87,7 +87,7 @@ func (a *Client) GetClustersByAge(params *GetClustersByAgeParams) (*GetClustersB
 		PathPattern:        "/clusters/age",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http", "https"},
+		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &GetClustersByAgeReader{formats: a.formats},
 	})
@@ -112,7 +112,7 @@ func (a *Client) GetClustersCount(params *GetClustersCountParams) (*GetClustersC
 		PathPattern:        "/clusters/count",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http", "https"},
+		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &GetClustersCountReader{formats: a.formats},
 	})
@@ -120,31 +120,6 @@ func (a *Client) GetClustersCount(params *GetClustersCountParams) (*GetClustersC
 		return nil, err
 	}
 	return result.(*GetClustersCountOK), nil
-}
-
-/*
-GetComponentByLatestRelease reads the latest release of a component
-*/
-func (a *Client) GetComponentByLatestRelease(params *GetComponentByLatestReleaseParams) (*GetComponentByLatestReleaseOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetComponentByLatestReleaseParams()
-	}
-
-	result, err := a.transport.Submit(&client.Operation{
-		ID:                 "getComponentByLatestRelease",
-		Method:             "GET",
-		PathPattern:        "/versions/{train}/{component}/latest",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http", "https"},
-		Params:             params,
-		Reader:             &GetComponentByLatestReleaseReader{formats: a.formats},
-	})
-	if err != nil {
-		return nil, err
-	}
-	return result.(*GetComponentByLatestReleaseOK), nil
 }
 
 /*
@@ -162,7 +137,7 @@ func (a *Client) GetComponentByName(params *GetComponentByNameParams) (*GetCompo
 		PathPattern:        "/versions/{train}/{component}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http", "https"},
+		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &GetComponentByNameReader{formats: a.formats},
 	})
@@ -187,7 +162,7 @@ func (a *Client) GetComponentByRelease(params *GetComponentByReleaseParams) (*Ge
 		PathPattern:        "/versions/{train}/{component}/{release}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http", "https"},
+		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &GetComponentByReleaseReader{formats: a.formats},
 	})
@@ -212,7 +187,7 @@ func (a *Client) GetComponentsByLatestRelease(params *GetComponentsByLatestRelea
 		PathPattern:        "/versions/latest",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http", "https"},
+		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &GetComponentsByLatestReleaseReader{formats: a.formats},
 	})
@@ -237,7 +212,7 @@ func (a *Client) PublishComponentRelease(params *PublishComponentReleaseParams) 
 		PathPattern:        "/versions/{train}/{component}/{release}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http", "https"},
+		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &PublishComponentReleaseReader{formats: a.formats},
 	})

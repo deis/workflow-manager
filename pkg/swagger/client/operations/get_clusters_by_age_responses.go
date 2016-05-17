@@ -117,7 +117,7 @@ type GetClustersByAgeOKBodyBody struct {
 
 	Required: true
 	*/
-	Data []*models.ClusterDetail `json:"data"`
+	Data []*models.Cluster `json:"data"`
 }
 
 // Validate validates this get clusters by age o k body body

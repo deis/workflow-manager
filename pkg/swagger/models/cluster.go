@@ -10,17 +10,17 @@ import (
 	"github.com/go-swagger/go-swagger/httpkit/validate"
 )
 
-/*ClusterDetail cluster detail
+/*Cluster cluster
 
-swagger:model clusterDetail
+swagger:model cluster
 */
-type ClusterDetail struct {
+type Cluster struct {
 
 	/* components
 
 	Required: true
 	*/
-	Components []*ComponentDetail `json:"components"`
+	Components []*ComponentVersion `json:"components"`
 
 	/* first seen
 	 */
@@ -38,8 +38,8 @@ type ClusterDetail struct {
 	LastSeen *strfmt.DateTime `json:"lastSeen,omitempty"`
 }
 
-// Validate validates this cluster detail
-func (m *ClusterDetail) Validate(formats strfmt.Registry) error {
+// Validate validates this cluster
+func (m *Cluster) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateComponents(formats); err != nil {
@@ -58,7 +58,7 @@ func (m *ClusterDetail) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *ClusterDetail) validateComponents(formats strfmt.Registry) error {
+func (m *Cluster) validateComponents(formats strfmt.Registry) error {
 
 	if err := validate.Required("components", "body", m.Components); err != nil {
 		return err
@@ -78,7 +78,7 @@ func (m *ClusterDetail) validateComponents(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *ClusterDetail) validateID(formats strfmt.Registry) error {
+func (m *Cluster) validateID(formats strfmt.Registry) error {
 
 	if err := validate.RequiredString("id", "body", string(m.ID)); err != nil {
 		return err

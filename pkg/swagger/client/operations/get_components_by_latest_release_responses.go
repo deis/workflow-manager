@@ -108,54 +108,6 @@ func (o *GetComponentsByLatestReleaseDefault) readResponse(response client.Respo
 	return nil
 }
 
-/*GetComponentsByLatestReleaseOKBodyBody get components by latest release o k body body
-
-swagger:model GetComponentsByLatestReleaseOKBodyBody
-*/
-type GetComponentsByLatestReleaseOKBodyBody struct {
-
-	/* data
-
-	Required: true
-	*/
-	Data []*models.ComponentDetail `json:"data"`
-}
-
-// Validate validates this get components by latest release o k body body
-func (o *GetComponentsByLatestReleaseOKBodyBody) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.validateData(formats); err != nil {
-		// prop
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *GetComponentsByLatestReleaseOKBodyBody) validateData(formats strfmt.Registry) error {
-
-	if err := validate.Required("getComponentsByLatestReleaseOK"+"."+"data", "body", o.Data); err != nil {
-		return err
-	}
-
-	for i := 0; i < len(o.Data); i++ {
-
-		if o.Data[i] != nil {
-
-			if err := o.Data[i].Validate(formats); err != nil {
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
 /*GetComponentsByLatestReleaseBody get components by latest release body
 
 swagger:model GetComponentsByLatestReleaseBody
@@ -164,7 +116,7 @@ type GetComponentsByLatestReleaseBody struct {
 
 	/* data
 	 */
-	Data []*models.ComponentDetail `json:"data,omitempty"`
+	Data []*models.ComponentVersion `json:"data,omitempty"`
 }
 
 // Validate validates this get components by latest release body
@@ -186,6 +138,54 @@ func (o *GetComponentsByLatestReleaseBody) validateData(formats strfmt.Registry)
 
 	if swag.IsZero(o.Data) { // not required
 		return nil
+	}
+
+	for i := 0; i < len(o.Data); i++ {
+
+		if o.Data[i] != nil {
+
+			if err := o.Data[i].Validate(formats); err != nil {
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+/*GetComponentsByLatestReleaseOKBodyBody get components by latest release o k body body
+
+swagger:model GetComponentsByLatestReleaseOKBodyBody
+*/
+type GetComponentsByLatestReleaseOKBodyBody struct {
+
+	/* data
+
+	Required: true
+	*/
+	Data []*models.ComponentVersion `json:"data"`
+}
+
+// Validate validates this get components by latest release o k body body
+func (o *GetComponentsByLatestReleaseOKBodyBody) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := o.validateData(formats); err != nil {
+		// prop
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (o *GetComponentsByLatestReleaseOKBodyBody) validateData(formats strfmt.Registry) error {
+
+	if err := validate.Required("getComponentsByLatestReleaseOK"+"."+"data", "body", o.Data); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(o.Data); i++ {

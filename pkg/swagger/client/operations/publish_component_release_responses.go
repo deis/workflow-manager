@@ -50,7 +50,7 @@ func NewPublishComponentReleaseOK() *PublishComponentReleaseOK {
 publish component release response
 */
 type PublishComponentReleaseOK struct {
-	Payload *models.ComponentDetail
+	Payload *models.ComponentVersion
 }
 
 func (o *PublishComponentReleaseOK) Error() string {
@@ -59,7 +59,7 @@ func (o *PublishComponentReleaseOK) Error() string {
 
 func (o *PublishComponentReleaseOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.ComponentDetail)
+	o.Payload = new(models.ComponentVersion)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
