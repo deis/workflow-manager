@@ -9,7 +9,11 @@ DEV_ENV_IMAGE := quay.io/deis/go-dev:0.9.0
 SWAGGER_IMAGE := quay.io/goswagger/swagger:0.5.0
 DEV_ENV_WORK_DIR := /go/src/github.com/deis/${SHORT_NAME}
 DEV_ENV_CMD := docker run --rm -e CGO_ENABLED=0 -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR} ${DEV_ENV_IMAGE}
+<<<<<<< 159503fa960ba1e77ed42332dd9276ea753bd9df
 SWAGGER_CMD := docker run --rm -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR} ${SWAGGER_IMAGE}
+=======
+SWAGGER_CMD := docker run --rm -e GOPATH=/go -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR} ${SWAGGER_IMAGE}
+>>>>>>> feat(swagger): generate the client stub for the workflow manager api spec
 
 # Common flags passed into Go's linker.
 LDFLAGS := "-s -X main.version=${VERSION}"
@@ -34,6 +38,9 @@ bootstrap:
 build:
 	mkdir -p ${BINDIR}
 	${DEV_ENV_CMD} go build -o rootfs/bin/boot -a -installsuffix cgo -ldflags ${LDFLAGS} boot.go
+
+swagger-clientstub:
+	${SWAGGER_CMD} generate client -A WorkflowManager -t pkg/swagger -f api/swagger-spec/swagger.yml
 
 test:
 	${SWAGGER_CMD} validate ./api/swagger-spec/swagger.yml
