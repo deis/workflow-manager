@@ -10,3 +10,6 @@ import:
     - client/unversioned
     - labels
     - api
+- package: speter.net/go/exp/math/dec/inf
+  repo: https://github.com/belua/inf
+  vcs: git
