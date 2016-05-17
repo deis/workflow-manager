@@ -137,7 +137,8 @@ func ParseJSONCluster(rawJSON []byte) (types.Cluster, error) {
 // GetLatestVersion returns the latest known version of a deis component
 func GetLatestVersion(component string) (types.Version, error) {
 	var latestVersion types.Version
-	latestVersions, err := data.GetAvailableVersions(data.AvailableVersionsFromAPI{})
+	vers := data.NewAvailableVersionsFromAPI()
+	latestVersions, err := data.GetAvailableVersions(vers)
 	if err != nil {
 		return types.Version{}, err
 	}

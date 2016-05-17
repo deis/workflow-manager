@@ -40,9 +40,11 @@ func (g InstalledMockData) Get() ([]byte, error) {
 }
 
 // ClusterIDMockData mock data struct
-type ClusterIDMockData struct{}
+type ClusterIDMockData struct {
+	cache string
+}
 
-// Get method for ClusterIDMockData
+// Get is the ClusterID interface implementation
 func (c ClusterIDMockData) Get() (string, error) {
 	data, err := GetMockClusterID()
 	if err != nil {
@@ -50,6 +52,16 @@ func (c ClusterIDMockData) Get() (string, error) {
 		return "", err
 	}
 	return data, nil
+}
+
+// Cached is the ClusterID interface implementation
+func (c ClusterIDMockData) Cached() string {
+	return c.cache
+}
+
+// StoreInCache is the ClusterID interface implementation
+func (c *ClusterIDMockData) StoreInCache(cid string) {
+	c.cache = cid
 }
 
 // LatestMockData mock data struct

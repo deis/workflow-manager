@@ -15,17 +15,20 @@ const mockComponentDescription = "mock component"
 const mockComponentVersion = "v2-beta"
 
 // Creating a novel mock struct that fulfills the ClusterID interface
-type testClusterID struct{}
+type testClusterID struct {
+	cache string
+}
 
 func (c testClusterID) Get() (string, error) {
 	return mockClusterID, nil
 }
 
-// Creating another mock struct that fulfills the ClusterID interface
-type shouldBypassID struct{}
+func (c testClusterID) Cached() string {
+	return c.cache
+}
 
-func (c shouldBypassID) Get() (string, error) {
-	return "fake-id", nil
+func (c *testClusterID) StoreInCache(cid string) {
+	c.cache = cid
 }
 
 // Creating a novel mock struct that fulfills the AvailableVersions interface
@@ -40,6 +43,10 @@ func (a testAvailableVersions) Refresh() ([]types.ComponentVersion, error) {
 
 func (a testAvailableVersions) Store(c []types.ComponentVersion) {
 	return
+}
+
+func (a testAvailableVersions) Cached() []types.ComponentVersion {
+	return nil
 }
 
 // Creating another mock struct that fulfills the AvailableVersions interface
@@ -68,16 +75,22 @@ func (a shouldBypassAvailableVersions) Store(c []types.ComponentVersion) {
 	return
 }
 
+func (a shouldBypassAvailableVersions) Cached() []types.ComponentVersion {
+	return nil
+}
+
 // Calls GetID twice, the first time we expect our passed-in struct w/ Get() method
 // to be invoked, the 2nd time we expect to receive the same value back (cached in memory)
 // and for the passed-in Get() method to be ignored
 func TestGetID(t *testing.T) {
-	id, err := GetID(testClusterID{})
+	cid := &testClusterID{}
+	id, err := GetID(cid)
 	assert.NoErr(t, err)
 	assert.Equal(t, id, mockClusterID, "cluster ID value")
-	id, err = GetID(shouldBypassID{})
+	cid.cache = "something else"
+	id, err = GetID(cid)
 	assert.NoErr(t, err)
-	assert.Equal(t, id, mockClusterID, "cached cluster ID value")
+	assert.Equal(t, id, "something else", "cluster ID value")
 }
 
 // Calls GetAvailableVersions twice, the first time we expect our passed-in struct w/ Refresh() method

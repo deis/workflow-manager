@@ -17,8 +17,9 @@ const (
 
 // RegisterRoutes attaches handler functions to routes
 func RegisterRoutes(r *mux.Router) *mux.Router {
-	r.Handle(componentsRoute, ComponentsHandler(components.InstalledDeisData{}, data.ClusterIDFromPersistentStorage{}, components.LatestReleasedComponent{}))
-	r.Handle(idRoute, IDHandler(data.ClusterIDFromPersistentStorage{}))
+	clusterID := data.NewClusterIDFromPersistentStorage()
+	r.Handle(componentsRoute, ComponentsHandler(components.InstalledDeisData{}, clusterID, components.LatestReleasedComponent{}))
+	r.Handle(idRoute, IDHandler(clusterID))
 	return r
 }
 

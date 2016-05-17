@@ -3,6 +3,7 @@ package data
 import (
 	"log"
 	"os"
+	"sync"
 
 	"k8s.io/kubernetes/pkg/api"
 	k8sErrors "k8s.io/kubernetes/pkg/api/errors"
@@ -13,12 +14,24 @@ import (
 type ClusterID interface {
 	// will have a Get method to retrieve the cluster ID
 	Get() (string, error)
+	// Cached returns the internal cache of the cluster ID. returns the empty string on a miss
+	Cached() string
+	// StoreInCache stores the given string in the internal cluster ID cache
+	StoreInCache(string)
 }
 
 // ClusterIDFromPersistentStorage fulfills the ClusterID interface
-type ClusterIDFromPersistentStorage struct{}
+type ClusterIDFromPersistentStorage struct {
+	rwm   *sync.RWMutex
+	cache string
+}
 
-// Get method for ClusterIDFromPersistentStorage
+// NewClusterIDFromPersistentStorage returns a new ClusterID implementation that uses the kubernetes API to get its cluster information
+func NewClusterIDFromPersistentStorage() *ClusterIDFromPersistentStorage {
+	return &ClusterIDFromPersistentStorage{rwm: new(sync.RWMutex), cache: ""}
+}
+
+// Get is the ClusterID interface implementation
 func (c ClusterIDFromPersistentStorage) Get() (string, error) {
 	kubeClient, err := kcl.NewInCluster()
 	if err != nil {
@@ -54,4 +67,18 @@ func (c ClusterIDFromPersistentStorage) Get() (string, error) {
 		secret = fromAPI
 	}
 	return string(secret.Data[clusterIDSecretKey]), nil
+}
+
+// StoreInCache is the ClusterID interface implementation
+func (c *ClusterIDFromPersistentStorage) StoreInCache(cid string) {
+	c.rwm.Lock()
+	defer c.rwm.Unlock()
+	c.cache = cid
+}
+
+// Cached is the ClusterID interface implementation
+func (c ClusterIDFromPersistentStorage) Cached() string {
+	c.rwm.RLock()
+	defer c.rwm.RUnlock()
+	return c.cache
 }

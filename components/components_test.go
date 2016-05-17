@@ -54,7 +54,7 @@ func (c mockInstalledComponent) Get(component string) ([]byte, error) {
 
 func TestGetCluster(t *testing.T) {
 	mockCluster := getMockCluster(t)
-	cluster, err := GetCluster(mocks.InstalledMockData{}, mocks.ClusterIDMockData{}, mocks.LatestMockData{})
+	cluster, err := GetCluster(mocks.InstalledMockData{}, &mocks.ClusterIDMockData{}, mocks.LatestMockData{})
 	assert.NoErr(t, err)
 	assert.Equal(t, cluster.ID, mockCluster.ID, "ID value")
 	for i, component := range cluster.Components {

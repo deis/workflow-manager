@@ -15,8 +15,8 @@ import (
 
 func newServer() *httptest.Server {
 	r := mux.NewRouter()
-	r.Handle("/components", handlers.ComponentsHandler(mocks.InstalledMockData{}, mocks.ClusterIDMockData{}, mocks.LatestMockData{}))
-	r.Handle("/id", handlers.IDHandler(mocks.ClusterIDMockData{}))
+	r.Handle("/components", handlers.ComponentsHandler(mocks.InstalledMockData{}, &mocks.ClusterIDMockData{}, mocks.LatestMockData{}))
+	r.Handle("/id", handlers.IDHandler(&mocks.ClusterIDMockData{}))
 	return httptest.NewServer(r)
 }
 

@@ -2,7 +2,6 @@ package data
 
 import (
 	"crypto/tls"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -16,39 +15,18 @@ const (
 	clusterIDSecretKey = "cluster-id"
 )
 
-var (
-	clusterID         string
-	availableVersions []types.ComponentVersion
-)
-
-// getClusterID returns the cached ID, or an error if it's not cached in memory
-func getClusterID() (string, error) {
-	if clusterID == "" {
-		return "", fmt.Errorf("cluster ID not cached in memory")
-	}
-	return clusterID, nil
-}
-
-// getAvailableVersions returns the cached available version data, or an error
-func getAvailableVersions() ([]types.ComponentVersion, error) {
-	if len(availableVersions) == 0 {
-		return nil, fmt.Errorf("no available versions data cached")
-	}
-	return availableVersions, nil
-}
-
 // GetID gets the cluster ID
 func GetID(id ClusterID) (string, error) {
 	// First, check to see if we have an in-memory copy
-	data, err := getClusterID()
+	data := id.Cached()
 	// If we haven't yet cached the ID in memory, invoke the passed-in getter
-	if err != nil {
-		data, err = id.Get()
+	if data == "" {
+		d, err := id.Get()
 		if err != nil {
 			log.Print(err)
 			return "", err
 		}
-		clusterID = data
+		data = d
 	}
 	return data, nil
 }
@@ -56,15 +34,14 @@ func GetID(id ClusterID) (string, error) {
 // GetAvailableVersions gets available component version data
 func GetAvailableVersions(a AvailableVersions) ([]types.ComponentVersion, error) {
 	// First, check to see if we have an in-memory copy
-	data, err := getAvailableVersions()
+	data := a.Cached()
 	// If we don't have any cached data, get the data from the remote authority
-	if err != nil {
-		data, err = a.Refresh()
+	if len(data) == 0 {
+		d, err := a.Refresh()
 		if err != nil {
-			log.Print(err)
 			return nil, err
 		}
-		return data, nil
+		data = d
 	}
 	return data, nil
 }

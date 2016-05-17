@@ -39,10 +39,20 @@ func (g mockInstalledComponents) Get() ([]byte, error) {
 const mockID = "faa31f63-d8dc-42e3-9568-405d20a3f755"
 
 // Creating a novel mock struct that fulfills the data.ClusterID interface
-type mockClusterID struct{}
+type mockClusterID struct {
+	cached string
+}
 
 func (c mockClusterID) Get() (string, error) {
 	return mockID, nil
+}
+
+func (c mockClusterID) Cached() string {
+	return c.cached
+}
+
+func (c *mockClusterID) StoreInCache(cid string) {
+	c.cached = cid
 }
 
 const mockAvailableComponentName = "component"
@@ -64,7 +74,7 @@ type genericJSON struct {
 }
 
 func TestComponentsHandler(t *testing.T) {
-	componentsHandler := ComponentsHandler(mockInstalledComponents{}, mockClusterID{}, mockAvailableVersion{})
+	componentsHandler := ComponentsHandler(mockInstalledComponents{}, &mockClusterID{}, mockAvailableVersion{})
 	resp, err := getTestHandlerResponse(componentsHandler)
 	assert.NoErr(t, err)
 	assert200(t, resp)
@@ -81,7 +91,7 @@ func TestComponentsHandler(t *testing.T) {
 }
 
 func TestIDHandler(t *testing.T) {
-	idHandler := IDHandler(mockClusterID{})
+	idHandler := IDHandler(&mockClusterID{})
 	resp, err := getTestHandlerResponse(idHandler)
 	assert.NoErr(t, err)
 	assert200(t, resp)

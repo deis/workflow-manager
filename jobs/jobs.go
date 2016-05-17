@@ -81,7 +81,7 @@ func runJobs(p []Periodic) {
 //  sendVersions sends cluster version data
 func sendVersions() error {
 	var clustersRoute = "/" + config.Spec.APIVersion + "/clusters/"
-	cluster, err := components.GetCluster(components.InstalledDeisData{}, data.ClusterIDFromPersistentStorage{}, components.LatestReleasedComponent{})
+	cluster, err := components.GetCluster(components.InstalledDeisData{}, data.NewClusterIDFromPersistentStorage(), components.LatestReleasedComponent{})
 	if err != nil {
 		log.Println("error getting installed components data")
 		return err
