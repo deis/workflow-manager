@@ -1,0 +1,289 @@
+swagger: "2.0"
+info:
+  title: Workflow Manager
+  version: 1.0.0
+basePath: /v1
+produces:
+  - application/json
+consumes:
+  - application/json
+schemes:
+  - http
+  - https
+paths:
+  /versions/{train}/{component}/{release}:
+    parameters:
+      - $ref: "#/parameters/trainParam"
+      - $ref: "#/parameters/componentParam"
+      - $ref: "#/parameters/releaseParam"
+    get:
+      operationId: getComponentByRelease
+      summary: "read the specified release of a component"
+      responses:
+        200:
+          description: component release response
+          schema:
+            $ref: "#/definitions/componentDetail"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
+    post:
+      operationId: publishComponentRelease
+      summary: "publish a new release for the component"
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/componentDetail"
+      responses:
+        200:
+          description: publish component release response
+          schema:
+            $ref: "#/definitions/componentDetail"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
+  /versions/{train}/{component}:
+    get:
+      operationId: getComponentByName
+      summary: "list the releases of a component"
+      parameters:
+        - $ref: "#/parameters/trainParam"
+        - $ref: "#/parameters/componentParam"
+      responses:
+        200:
+          description: component releases response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/componentDetail"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
+  /versions/{train}/{component}/latest:
+    get:
+      operationId: getComponentByLatestRelease
+      summary: "read the latest release of a component"
+      parameters:
+        - $ref: "#/parameters/trainParam"
+        - $ref: "#/parameters/componentParam"
+      responses:
+        200:
+          description: component latest release response
+          schema:
+            $ref: "#/definitions/componentDetail"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
+  /versions/latest:
+    post:
+      operationId: getComponentsByLatestRelease
+      summary: "list the latest release version of the components"
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/componentDetail"
+      responses:
+        200:
+          description: component releases response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/componentDetail"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
+  /clusters/count:
+    get:
+      operationId: getClustersCount
+      summary: "read the count of the known deis clusters"
+      responses:
+        200:
+          description: clusters count response
+          schema:
+            type: integer
+            format: int64
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
+  /clusters/age:
+    get:
+      operationId: getClustersByAge
+      summary: "list clusters"
+      parameters:
+        - name: checked_in_before
+          in: query
+          type: string
+          format: date-time
+        - name: checked_in_after
+          in: query
+          type: string
+          format: date-time
+        - name: created_before
+          in: query
+          type: string
+          format: date-time
+        - name: created_after
+          in: query
+          type: string
+          format: date-time
+      responses:
+        200:
+          description: clusters details response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/clusterDetail"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
+  /clusters/{id}:
+    get:
+      operationId: getClusterById
+      summary: "read a cluster details"
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: clusters details response
+          schema:
+            $ref: "#/definitions/clusterDetail"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
+  /clusters:
+    post:
+      operationId: createClusterDetails
+      summary: "create a cluster with all components"
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/clusterDetail"
+      responses:
+        200:
+          description: clusters details response
+          schema:
+            $ref: "#/definitions/clusterDetail"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
+parameters:
+  trainParam:
+    name: train
+    in: path
+    type: string
+    description: A train is a release cadence type, e.g., "beta" or "stable"
+    required: true
+  componentParam:
+    name: component
+    type: string
+    in: path
+    description: A component is a single deis component, e.g., deis-router
+    required: true
+  releaseParam:
+    name: release
+    type: string
+    in: path
+    description: The release version of the deis component, eg., 2.0.0-beta2
+    required: true
+definitions:
+  clusterDetail:
+    type: object
+    required:
+      - id
+      - components
+    properties:
+      id:
+        type: string
+        minLength: 1
+      firstSeen:
+        type: string
+        format: date-time
+      lastSeen:
+        type: string
+        format: date-time
+      components:
+        type: array
+        items:
+          $ref: "#/definitions/componentDetail"
+  componentDetail:
+    type: object
+    properties:
+      component:
+        $ref: "#/definitions/component"
+      version:
+        $ref: "#/definitions/version"
+  component:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+        minLength: 1
+      description:
+        type: string
+  version:
+    type: object
+    required:
+      - train
+    properties:
+      train:
+        type: string
+        minLength: 1
+      version:
+        type: string
+        minLength: 1
+      released:
+        type: string
+        minLength: 1
+      data:
+        $ref: "#/definitions/data"
+  data:
+    type: object
+    properties:
+      description:
+        type: string
+        minLength: 1
+      fixes:
+        type: string
+        minLength: 1
+  error:
+    type: object
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int64
+      message:
+        type: string
