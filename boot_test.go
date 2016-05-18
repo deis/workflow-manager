@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/arschles/assert"
-	"github.com/deis/workflow-manager/components"
+	"github.com/deis/workflow-manager/data"
 	"github.com/deis/workflow-manager/handlers"
 	"github.com/deis/workflow-manager/mocks"
 	"github.com/gorilla/mux"
@@ -25,13 +25,13 @@ func TestGetComponents(t *testing.T) {
 	resp, err := testGet(componentRoute)
 	assert.NoErr(t, err)
 	assert200(t, resp)
-	data, err := ioutil.ReadAll(resp.Body)
+	respData, err := ioutil.ReadAll(resp.Body)
 	assert.NoErr(t, err)
-	cluster, err := components.ParseJSONCluster(data)
+	cluster, err := data.ParseJSONCluster(respData)
 	assert.NoErr(t, err)
 	mockData, err := mocks.GetMockCluster()
 	assert.NoErr(t, err)
-	mockCluster, err := components.ParseJSONCluster(mockData)
+	mockCluster, err := data.ParseJSONCluster(mockData)
 	assert.NoErr(t, err)
 	assert.Equal(t, cluster.ID, mockCluster.ID, "cluster ID value")
 	for i, component := range cluster.Components {
@@ -48,11 +48,11 @@ func TestGetID(t *testing.T) {
 	resp, err := testGet(idRoute)
 	assert.NoErr(t, err)
 	assert200(t, resp)
-	data, err := ioutil.ReadAll(resp.Body)
+	respData, err := ioutil.ReadAll(resp.Body)
 	assert.NoErr(t, err)
 	mockData, err := mocks.GetMockClusterID()
 	assert.NoErr(t, err)
-	assert.Equal(t, string(data), mockData, "id data response")
+	assert.Equal(t, string(respData), mockData, "id data response")
 }
 
 func testGet(route string) (*http.Response, error) {

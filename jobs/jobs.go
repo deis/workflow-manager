@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/deis/workflow-manager/components"
 	"github.com/deis/workflow-manager/config"
 	"github.com/deis/workflow-manager/data"
 )
@@ -38,7 +37,7 @@ type GetLatestVersionData struct{}
 
 // Do method of GetLatestVersionData
 func (u GetLatestVersionData) Do() error {
-	var dataSource data.AvailableVersionsFromAPI
+	dataSource := data.NewAvailableVersionsFromAPI("")
 	_, err := dataSource.Refresh()
 	if err != nil {
 		return err
@@ -81,7 +80,7 @@ func runJobs(p []Periodic) {
 //  sendVersions sends cluster version data
 func sendVersions() error {
 	var clustersRoute = "/" + config.Spec.APIVersion + "/clusters/"
-	cluster, err := components.GetCluster(components.InstalledDeisData{}, data.NewClusterIDFromPersistentStorage(), components.LatestReleasedComponent{})
+	cluster, err := data.GetCluster(data.InstalledDeisData{}, data.NewClusterIDFromPersistentStorage(), data.LatestReleasedComponent{})
 	if err != nil {
 		log.Println("error getting installed components data")
 		return err

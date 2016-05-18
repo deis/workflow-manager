@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/deis/workflow-manager/components"
 	"github.com/deis/workflow-manager/data"
 	"github.com/gorilla/mux"
 )
@@ -18,15 +17,15 @@ const (
 // RegisterRoutes attaches handler functions to routes
 func RegisterRoutes(r *mux.Router) *mux.Router {
 	clusterID := data.NewClusterIDFromPersistentStorage()
-	r.Handle(componentsRoute, ComponentsHandler(components.InstalledDeisData{}, clusterID, components.LatestReleasedComponent{}))
+	r.Handle(componentsRoute, ComponentsHandler(data.InstalledDeisData{}, clusterID, data.LatestReleasedComponent{}))
 	r.Handle(idRoute, IDHandler(clusterID))
 	return r
 }
 
 // ComponentsHandler route handler
-func ComponentsHandler(c components.InstalledData, i data.ClusterID, v components.AvailableComponentVersion) http.Handler {
+func ComponentsHandler(c data.InstalledData, i data.ClusterID, v data.AvailableComponentVersion) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cluster, err := components.GetCluster(c, i, v)
+		cluster, err := data.GetCluster(c, i, v)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

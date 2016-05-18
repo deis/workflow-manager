@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/arschles/assert"
-	"github.com/deis/workflow-manager/components"
+	"github.com/deis/workflow-manager/data"
 	"github.com/deis/workflow-manager/types"
 	"github.com/gorilla/mux"
 )
@@ -17,7 +17,7 @@ const mockInstalledComponentName = "component"
 const mockInstalledComponentDescription = "mock component"
 const mockInstalledComponentVersion = "1.2.3"
 
-// Creating a novel mock struct that fulfills the components.InstalledData interface
+// Creating a novel mock struct that fulfills the data.InstalledData interface
 type mockInstalledComponents struct{}
 
 func (g mockInstalledComponents) Get() ([]byte, error) {
@@ -59,7 +59,7 @@ const mockAvailableComponentName = "component"
 const mockAvailableComponentDescription = "mock component"
 const mockAvailableComponentVersion = "3.2.1"
 
-// Creating a novel mock struct that fulfills the components.AvailableComponentVersion interface
+// Creating a novel mock struct that fulfills the data.AvailableComponentVersion interface
 type mockAvailableVersion struct{}
 
 func (c mockAvailableVersion) Get(component string) (types.Version, error) {
@@ -78,9 +78,9 @@ func TestComponentsHandler(t *testing.T) {
 	resp, err := getTestHandlerResponse(componentsHandler)
 	assert.NoErr(t, err)
 	assert200(t, resp)
-	data, err := ioutil.ReadAll(resp.Body)
+	respData, err := ioutil.ReadAll(resp.Body)
 	assert.NoErr(t, err)
-	cluster, err := components.ParseJSONCluster(data)
+	cluster, err := data.ParseJSONCluster(respData)
 	assert.NoErr(t, err)
 	assert.Equal(t, cluster.ID, mockID, "ID value")
 	assert.Equal(t, cluster.Components[0].Component.Name, mockInstalledComponentName, "Name value")
@@ -95,9 +95,9 @@ func TestIDHandler(t *testing.T) {
 	resp, err := getTestHandlerResponse(idHandler)
 	assert.NoErr(t, err)
 	assert200(t, resp)
-	data, err := ioutil.ReadAll(resp.Body)
+	respData, err := ioutil.ReadAll(resp.Body)
 	assert.NoErr(t, err)
-	assert.Equal(t, string(data), mockID, "ID value")
+	assert.Equal(t, string(respData), mockID, "ID value")
 }
 
 func TestWritePlainText(t *testing.T) {
@@ -108,9 +108,9 @@ func TestWritePlainText(t *testing.T) {
 	resp, err := getTestHandlerResponse(handler)
 	assert.NoErr(t, err)
 	assert.Equal(t, resp.Header.Get("Content-Type"), "text/plain", "Content-Type value")
-	data, err := ioutil.ReadAll(resp.Body)
+	respData, err := ioutil.ReadAll(resp.Body)
 	assert.NoErr(t, err)
-	assert.Equal(t, string(data), text, "text response")
+	assert.Equal(t, string(respData), text, "text response")
 }
 
 func getTestHandlerResponse(handler http.Handler) (*http.Response, error) {

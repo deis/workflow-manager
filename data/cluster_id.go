@@ -5,6 +5,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/satori/go.uuid"
 	"k8s.io/kubernetes/pkg/api"
 	k8sErrors "k8s.io/kubernetes/pkg/api/errors"
 	kcl "k8s.io/kubernetes/pkg/client/unversioned"
@@ -20,19 +21,33 @@ type ClusterID interface {
 	StoreInCache(string)
 }
 
-// ClusterIDFromPersistentStorage fulfills the ClusterID interface
-type ClusterIDFromPersistentStorage struct {
+// GetID gets the cluster ID from the cache. on a cache miss, uses the k8s API to get it
+func GetID(id ClusterID) (string, error) {
+	// First, check to see if we have an in-memory copy
+	data := id.Cached()
+	// If we haven't yet cached the ID in memory, invoke the passed-in getter
+	if data == "" {
+		d, err := id.Get()
+		if err != nil {
+			return "", err
+		}
+		data = d
+	}
+	return data, nil
+}
+
+type clusterIDFromPersistentStorage struct {
 	rwm   *sync.RWMutex
 	cache string
 }
 
 // NewClusterIDFromPersistentStorage returns a new ClusterID implementation that uses the kubernetes API to get its cluster information
-func NewClusterIDFromPersistentStorage() *ClusterIDFromPersistentStorage {
-	return &ClusterIDFromPersistentStorage{rwm: new(sync.RWMutex), cache: ""}
+func NewClusterIDFromPersistentStorage() ClusterID {
+	return &clusterIDFromPersistentStorage{rwm: new(sync.RWMutex), cache: ""}
 }
 
 // Get is the ClusterID interface implementation
-func (c ClusterIDFromPersistentStorage) Get() (string, error) {
+func (c clusterIDFromPersistentStorage) Get() (string, error) {
 	kubeClient, err := kcl.NewInCluster()
 	if err != nil {
 		log.Printf("Error getting kubernetes client [%s]", err)
@@ -58,7 +73,7 @@ func (c ClusterIDFromPersistentStorage) Get() (string, error) {
 		newSecret := new(api.Secret)
 		newSecret.Name = wfmSecretName
 		newSecret.Data = make(map[string][]byte)
-		newSecret.Data[clusterIDSecretKey] = []byte(getNewID())
+		newSecret.Data[clusterIDSecretKey] = []byte(uuid.NewV4().String())
 		fromAPI, err := deisSecrets.Create(newSecret)
 		if err != nil {
 			log.Printf("Error creating new ID [%s]", err)
@@ -70,14 +85,14 @@ func (c ClusterIDFromPersistentStorage) Get() (string, error) {
 }
 
 // StoreInCache is the ClusterID interface implementation
-func (c *ClusterIDFromPersistentStorage) StoreInCache(cid string) {
+func (c *clusterIDFromPersistentStorage) StoreInCache(cid string) {
 	c.rwm.Lock()
 	defer c.rwm.Unlock()
 	c.cache = cid
 }
 
 // Cached is the ClusterID interface implementation
-func (c ClusterIDFromPersistentStorage) Cached() string {
+func (c clusterIDFromPersistentStorage) Cached() string {
 	c.rwm.RLock()
 	defer c.rwm.RUnlock()
 	return c.cache

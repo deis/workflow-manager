@@ -4,12 +4,14 @@ import:
 - package: github.com/satori/go.uuid
 - package: github.com/arschles/assert
 - package: github.com/kelseyhightower/envconfig
-- package: k8s.io/kubernetes/pkg
+- package: k8s.io/kubernetes
   version: 1.1.8
   subpackages:
-    - client/unversioned
-    - labels
-    - api
+  - client/unversioned
+  - labels
+  - api
+  - pkg
 - package: speter.net/go/exp/math/dec/inf
   repo: https://github.com/belua/inf
   vcs: git
+- package: github.com/arschles/testsrv
