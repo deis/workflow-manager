@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/arschles/kubeapp/api/rc"
 	"github.com/deis/workflow-manager/config"
 	"github.com/deis/workflow-manager/types"
 )
@@ -29,7 +30,11 @@ type availableVersionsFromAPI struct {
 }
 
 // NewAvailableVersionsFromAPI returns a new AvailableVersions implementation that fetches its version information from a workflow manager API. It uses baseVersionsURL as the server address. If that parameter is passed as the empty string, uses config.Spec.VersionsAPIURL
-func NewAvailableVersionsFromAPI(baseVersionsURL string) AvailableVersions {
+func NewAvailableVersionsFromAPI(
+	baseVersionsURL string,
+	secretGetterCreator KubeSecretGetterCreator,
+	rcLister rc.Lister,
+) AvailableVersions {
 	if baseVersionsURL == "" {
 		baseVersionsURL = config.Spec.VersionsAPIURL
 	}
@@ -38,10 +43,10 @@ func NewAvailableVersionsFromAPI(baseVersionsURL string) AvailableVersions {
 		cache:           nil,
 		baseVersionsURL: baseVersionsURL,
 		clusterGetter: func() (types.Cluster, error) {
-			installedData := InstalledDeisData{}
-			clusterID := NewClusterIDFromPersistentStorage()
-			compVsn := LatestReleasedComponent{}
-			return GetCluster(installedData, clusterID, compVsn)
+			installedData := NewInstalledDeisData(rcLister)
+			clusterID := NewClusterIDFromPersistentStorage(secretGetterCreator)
+			compVsn := NewLatestReleasedComponent(secretGetterCreator, rcLister)
+			return GetCluster(installedData, clusterID, compVsn, secretGetterCreator)
 		},
 	}
 }

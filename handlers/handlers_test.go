@@ -74,7 +74,12 @@ type genericJSON struct {
 }
 
 func TestComponentsHandler(t *testing.T) {
-	componentsHandler := ComponentsHandler(mockInstalledComponents{}, &mockClusterID{}, mockAvailableVersion{})
+	componentsHandler := ComponentsHandler(
+		mockInstalledComponents{},
+		&mockClusterID{},
+		mockAvailableVersion{},
+		data.NewFakeKubeSecretGetterCreator(nil, nil),
+	)
 	resp, err := getTestHandlerResponse(componentsHandler)
 	assert.NoErr(t, err)
 	assert200(t, resp)

@@ -8,28 +8,32 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/deis/workflow-manager/config"
+	"github.com/arschles/kubeapp/api/rc"
 	"github.com/deis/workflow-manager/types"
 	"k8s.io/kubernetes/pkg/api"
-	kcl "k8s.io/kubernetes/pkg/client/unversioned"
 	"k8s.io/kubernetes/pkg/labels"
 )
 
 const (
-	deisNamespace      = "deis"
 	wfmSecretName      = "deis-workflow-manager"
 	clusterIDSecretKey = "cluster-id"
 )
 
 // GetCluster collects all cluster metadata and returns a Cluster
-func GetCluster(c InstalledData, i ClusterID, v AvailableComponentVersion) (types.Cluster, error) {
+func GetCluster(
+	c InstalledData,
+	i ClusterID,
+	v AvailableComponentVersion,
+	secretGetterCreator KubeSecretGetterCreator,
+) (types.Cluster, error) {
+
 	// Populate cluster object with installed components
 	cluster, err := GetInstalled(c)
 	if err != nil {
 		log.Print(err)
 		return types.Cluster{}, err
 	}
-	err = AddUpdateData(&cluster, v)
+	err = AddUpdateData(&cluster, v, secretGetterCreator)
 	if err != nil {
 		log.Print(err)
 	}
@@ -46,7 +50,7 @@ func GetCluster(c InstalledData, i ClusterID, v AvailableComponentVersion) (type
 
 // AddUpdateData adds UpdateAvailable field data to cluster components
 // Any cluster object modifications are made "in-place"
-func AddUpdateData(c *types.Cluster, v AvailableComponentVersion) error {
+func AddUpdateData(c *types.Cluster, v AvailableComponentVersion, secretGetterCreator KubeSecretGetterCreator) error {
 	// Determine if any components have an available update
 	for i, component := range c.Components {
 		installed := component.Version.Version
@@ -94,9 +98,13 @@ func GetInstalled(g InstalledData) (types.Cluster, error) {
 }
 
 // GetLatestVersion returns the latest known version of a deis component
-func GetLatestVersion(component string) (types.Version, error) {
+func GetLatestVersion(
+	component string,
+	secretGetterCreator KubeSecretGetterCreator,
+	rcLister rc.Lister,
+) (types.Version, error) {
 	var latestVersion types.Version
-	latestVersions, err := GetAvailableVersions(NewAvailableVersionsFromAPI(""))
+	latestVersions, err := GetAvailableVersions(NewAvailableVersionsFromAPI("", secretGetterCreator, rcLister))
 	if err != nil {
 		return types.Version{}, err
 	}
@@ -139,19 +147,14 @@ func NewestSemVer(v1 string, v2 string) (string, error) {
 
 // getDeisRCItems is a helper function that returns a slice of
 // ReplicationController objects in the "deis" namespace
-func getDeisRCItems() ([]api.ReplicationController, error) {
-	kubeClient, err := kcl.NewInCluster()
+func getDeisRCItems(rcLister rc.Lister) ([]api.ReplicationController, error) {
+	rcs, err := rcLister.List(api.ListOptions{
+		LabelSelector: labels.Everything(),
+	})
 	if err != nil {
-		log.Printf("Error getting kubernetes client [%s]", err)
 		return []api.ReplicationController{}, err
 	}
-	deis, err := kubeClient.ReplicationControllers(config.Spec.DeisNamespace).List(labels.Everything())
-	if err != nil {
-		log.Println("unable to get ReplicationControllers() data from kube client")
-		log.Print(err)
-		return []api.ReplicationController{}, err
-	}
-	return deis.Items, nil
+	return rcs.Items, nil
 }
 
 // getTLSClient returns a TLS-enabled http.Client

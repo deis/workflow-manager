@@ -1,6 +1,7 @@
 package data
 
 import (
+	"github.com/arschles/kubeapp/api/rc"
 	"github.com/deis/workflow-manager/types"
 )
 
@@ -11,11 +12,19 @@ type AvailableComponentVersion interface {
 }
 
 // LatestReleasedComponent fulfills the AvailableComponentVersion interface
-type LatestReleasedComponent struct{}
+type LatestReleasedComponent struct {
+	secretGetterCreator KubeSecretGetterCreator
+	rcLister            rc.Lister
+}
+
+// NewLatestReleasedComponent creates a new LatestReleasedComponent using sgc as the implementation to get and create secrets
+func NewLatestReleasedComponent(sgc KubeSecretGetterCreator, rcl rc.Lister) *LatestReleasedComponent {
+	return &LatestReleasedComponent{secretGetterCreator: sgc, rcLister: rcl}
+}
 
 // Get method for LatestReleasedComponent
 func (c LatestReleasedComponent) Get(component string) (types.Version, error) {
-	version, err := GetLatestVersion(component)
+	version, err := GetLatestVersion(component, c.secretGetterCreator, c.rcLister)
 	if err != nil {
 		return types.Version{}, err
 	}

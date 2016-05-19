@@ -150,7 +150,12 @@ func TestGetAvailableVersions(t *testing.T) {
 
 func TestGetCluster(t *testing.T) {
 	mockCluster := getMockCluster(t)
-	cluster, err := GetCluster(mocks.InstalledMockData{}, &mocks.ClusterIDMockData{}, mocks.LatestMockData{})
+	cluster, err := GetCluster(
+		mocks.InstalledMockData{},
+		&mocks.ClusterIDMockData{},
+		mocks.LatestMockData{},
+		NewFakeKubeSecretGetterCreator(nil, nil),
+	)
 	assert.NoErr(t, err)
 	assert.Equal(t, cluster.ID, mockCluster.ID, "ID value")
 	for i, component := range cluster.Components {
@@ -168,7 +173,7 @@ func TestGetCluster(t *testing.T) {
 func TestAddUpdateData(t *testing.T) {
 	mockCluster := getMockCluster(t)
 	// AddUpdateData should add an "UpdateAvailable" field to any components whose versions are out-of-date
-	err := AddUpdateData(&mockCluster, mocks.LatestMockData{})
+	err := AddUpdateData(&mockCluster, mocks.LatestMockData{}, NewFakeKubeSecretGetterCreator(nil, nil))
 	assert.NoErr(t, err)
 	//TODO: when newestVersion is implemented, actually test for the addition of "UpdateAvailable" fields.
 	// tracked in https://github.com/deis/workflow-manager/issues/52

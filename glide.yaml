@@ -5,7 +5,7 @@ import:
 - package: github.com/arschles/assert
 - package: github.com/kelseyhightower/envconfig
 - package: k8s.io/kubernetes
-  version: 1.1.8
+  version: ~1.2
   subpackages:
   - client/unversioned
   - labels
@@ -15,3 +15,6 @@ import:
   repo: https://github.com/belua/inf
   vcs: git
 - package: github.com/arschles/testsrv
+- package: github.com/arschles/kubeapp
+  subpackages:
+  - api

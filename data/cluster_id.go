@@ -2,13 +2,11 @@ package data
 
 import (
 	"log"
-	"os"
 	"sync"
 
 	"github.com/satori/go.uuid"
 	"k8s.io/kubernetes/pkg/api"
 	k8sErrors "k8s.io/kubernetes/pkg/api/errors"
-	kcl "k8s.io/kubernetes/pkg/client/unversioned"
 )
 
 // ClusterID is an interface for managing cluster ID data
@@ -37,24 +35,23 @@ func GetID(id ClusterID) (string, error) {
 }
 
 type clusterIDFromPersistentStorage struct {
-	rwm   *sync.RWMutex
-	cache string
+	rwm                 *sync.RWMutex
+	cache               string
+	secretGetterCreator KubeSecretGetterCreator
 }
 
 // NewClusterIDFromPersistentStorage returns a new ClusterID implementation that uses the kubernetes API to get its cluster information
-func NewClusterIDFromPersistentStorage() ClusterID {
-	return &clusterIDFromPersistentStorage{rwm: new(sync.RWMutex), cache: ""}
+func NewClusterIDFromPersistentStorage(sgc KubeSecretGetterCreator) ClusterID {
+	return &clusterIDFromPersistentStorage{
+		rwm:                 new(sync.RWMutex),
+		cache:               "",
+		secretGetterCreator: sgc,
+	}
 }
 
 // Get is the ClusterID interface implementation
 func (c clusterIDFromPersistentStorage) Get() (string, error) {
-	kubeClient, err := kcl.NewInCluster()
-	if err != nil {
-		log.Printf("Error getting kubernetes client [%s]", err)
-		os.Exit(1)
-	}
-	deisSecrets := kubeClient.Secrets(deisNamespace)
-	secret, err := deisSecrets.Get(wfmSecretName)
+	secret, err := c.secretGetterCreator.Get(wfmSecretName)
 	if err != nil {
 		log.Printf("Error getting secret [%s]", err)
 		switch e := err.(type) {
@@ -74,7 +71,7 @@ func (c clusterIDFromPersistentStorage) Get() (string, error) {
 		newSecret.Name = wfmSecretName
 		newSecret.Data = make(map[string][]byte)
 		newSecret.Data[clusterIDSecretKey] = []byte(uuid.NewV4().String())
-		fromAPI, err := deisSecrets.Create(newSecret)
+		fromAPI, err := c.secretGetterCreator.Create(newSecret)
 		if err != nil {
 			log.Printf("Error creating new ID [%s]", err)
 			return "", err

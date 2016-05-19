@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/arschles/kubeapp/api/rc"
 	"github.com/deis/workflow-manager/types"
 )
 
@@ -14,11 +15,18 @@ type InstalledData interface {
 }
 
 // InstalledDeisData fulfills the InstalledData interface
-type InstalledDeisData struct{}
+type InstalledDeisData struct {
+	rcLister rc.Lister
+}
+
+// NewInstalledDeisData returns a new InstalledDeisData using rcl as the rc.Lister implementation
+func NewInstalledDeisData(rcl rc.Lister) *InstalledDeisData {
+	return &InstalledDeisData{rcLister: rcl}
+}
 
 // Get method for InstalledDeisData
 func (g InstalledDeisData) Get() ([]byte, error) {
-	rcItems, err := getDeisRCItems()
+	rcItems, err := getDeisRCItems(g.rcLister)
 	var cluster types.Cluster
 	for _, rc := range rcItems {
 		component := types.ComponentVersion{}
