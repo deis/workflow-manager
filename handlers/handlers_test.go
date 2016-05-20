@@ -62,7 +62,7 @@ const mockAvailableComponentVersion = "3.2.1"
 // Creating a novel mock struct that fulfills the data.AvailableComponentVersion interface
 type mockAvailableVersion struct{}
 
-func (c mockAvailableVersion) Get(component string) (types.Version, error) {
+func (c mockAvailableVersion) Get(component string, cluster types.Cluster) (types.Version, error) {
 	if component == "component" {
 		return types.Version{Version: "v2-beta"}, nil
 	}

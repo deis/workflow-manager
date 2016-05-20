@@ -68,7 +68,7 @@ func (c *ClusterIDMockData) StoreInCache(cid string) {
 type LatestMockData struct{}
 
 // Get method for LatestMockData
-func (c LatestMockData) Get(component string) (types.Version, error) {
+func (c LatestMockData) Get(component string, cluster types.Cluster) (types.Version, error) {
 	data, err := GetMockLatest(component)
 	if err != nil {
 		log.Print(err)

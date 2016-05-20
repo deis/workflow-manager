@@ -3,12 +3,11 @@ package data
 import (
 	"bytes"
 	"encoding/json"
-	"log"
-	"net/http"
 	"sync"
 
 	"github.com/arschles/kubeapp/api/rc"
 	"github.com/deis/workflow-manager/config"
+	"github.com/deis/workflow-manager/rest"
 	"github.com/deis/workflow-manager/types"
 )
 
@@ -16,8 +15,8 @@ import (
 type AvailableVersions interface {
 	// Cached returns the internal cache of component versions. Returns the empty slice on a miss
 	Cached() []types.ComponentVersion
-	// Refresh gets the latest versions of each component in the internally stored cluster from the versions API
-	Refresh() ([]types.ComponentVersion, error)
+	// Refresh gets the latest versions of each component listed in the given cluster
+	Refresh(types.Cluster) ([]types.ComponentVersion, error)
 	// Store stores the given slice of types.ComponentVersion in internal storage
 	Store([]types.ComponentVersion)
 }
@@ -25,12 +24,13 @@ type AvailableVersions interface {
 type availableVersionsFromAPI struct {
 	cache           []types.ComponentVersion
 	rwm             *sync.RWMutex
-	clusterGetter   func() (types.Cluster, error)
 	baseVersionsURL string
+	restClient      rest.Client
 }
 
 // NewAvailableVersionsFromAPI returns a new AvailableVersions implementation that fetches its version information from a workflow manager API. It uses baseVersionsURL as the server address. If that parameter is passed as the empty string, uses config.Spec.VersionsAPIURL
 func NewAvailableVersionsFromAPI(
+	restCl rest.Client,
 	baseVersionsURL string,
 	secretGetterCreator KubeSecretGetterCreator,
 	rcLister rc.Lister,
@@ -42,21 +42,12 @@ func NewAvailableVersionsFromAPI(
 		rwm:             new(sync.RWMutex),
 		cache:           nil,
 		baseVersionsURL: baseVersionsURL,
-		clusterGetter: func() (types.Cluster, error) {
-			installedData := NewInstalledDeisData(rcLister)
-			clusterID := NewClusterIDFromPersistentStorage(secretGetterCreator)
-			compVsn := NewLatestReleasedComponent(secretGetterCreator, rcLister)
-			return GetCluster(installedData, clusterID, compVsn, secretGetterCreator)
-		},
+		restClient:      restCl,
 	}
 }
 
 // Refresh method for AvailableVersionsFromAPI
-func (a availableVersionsFromAPI) Refresh() ([]types.ComponentVersion, error) {
-	cluster, err := a.clusterGetter()
-	if err != nil {
-		return []types.ComponentVersion{}, err
-	}
+func (a availableVersionsFromAPI) Refresh(cluster types.Cluster) ([]types.ComponentVersion, error) {
 	reqBody := SparseComponentAndTrainInfoJSONWrapper{}
 	for _, component := range cluster.Components {
 		sparseComponentAndTrainInfo := SparseComponentAndTrainInfo{}
@@ -66,18 +57,10 @@ func (a availableVersionsFromAPI) Refresh() ([]types.ComponentVersion, error) {
 	}
 	js, err := json.Marshal(reqBody)
 	if err != nil {
-		log.Println("error making a JSON representation of cluster data")
 		return []types.ComponentVersion{}, err
 	}
-	var versionsLatestRoute = "/" + config.Spec.APIVersion + "/versions/latest"
-	url := a.baseVersionsURL + versionsLatestRoute
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(js))
-	if err != nil {
-		return []types.ComponentVersion{}, err
-	}
-	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := getTLSClient().Do(req)
+	resp, err := a.restClient.Do("POST", rest.JSContentTypeHeader, bytes.NewBuffer(js), config.Spec.APIVersion, "versions", "latest")
 	if err != nil {
 		return []types.ComponentVersion{}, err
 	}

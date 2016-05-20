@@ -1,11 +1,8 @@
 package data
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"log"
-	"net/http"
 	"strings"
 
 	"github.com/arschles/kubeapp/api/rc"
@@ -30,17 +27,15 @@ func GetCluster(
 	// Populate cluster object with installed components
 	cluster, err := GetInstalled(c)
 	if err != nil {
-		log.Print(err)
 		return types.Cluster{}, err
 	}
 	err = AddUpdateData(&cluster, v, secretGetterCreator)
 	if err != nil {
-		log.Print(err)
+		return types.Cluster{}, err
 	}
 	// Get the cluster ID
 	id, err := GetID(i)
 	if err != nil {
-		log.Print(err)
 		return cluster, err
 	}
 	// Attach the cluster ID to the components-populated cluster object
@@ -54,7 +49,7 @@ func AddUpdateData(c *types.Cluster, v AvailableComponentVersion, secretGetterCr
 	// Determine if any components have an available update
 	for i, component := range c.Components {
 		installed := component.Version.Version
-		latest, err := v.Get(component.Component.Name)
+		latest, err := v.Get(component.Component.Name, *c)
 		if err != nil {
 			return err
 		}
@@ -67,12 +62,12 @@ func AddUpdateData(c *types.Cluster, v AvailableComponentVersion, secretGetterCr
 }
 
 // GetAvailableVersions gets available component version data from the cache. If there was a cache miss, gets the versions from the k8s and versions APIs
-func GetAvailableVersions(a AvailableVersions) ([]types.ComponentVersion, error) {
+func GetAvailableVersions(a AvailableVersions, cluster types.Cluster) ([]types.ComponentVersion, error) {
 	// First, check to see if we have an in-memory copy
 	data := a.Cached()
 	// If we don't have any cached data, get the data from the remote authority
 	if len(data) == 0 {
-		d, err := a.Refresh()
+		d, err := a.Refresh(cluster)
 		if err != nil {
 			return nil, err
 		}
@@ -85,13 +80,11 @@ func GetAvailableVersions(a AvailableVersions) ([]types.ComponentVersion, error)
 func GetInstalled(g InstalledData) (types.Cluster, error) {
 	installed, err := g.Get()
 	if err != nil {
-		log.Print(err)
 		return types.Cluster{}, err
 	}
 	var cluster types.Cluster
 	cluster, err = ParseJSONCluster(installed)
 	if err != nil {
-		log.Print(err)
 		return types.Cluster{}, err
 	}
 	return cluster, nil
@@ -102,9 +95,11 @@ func GetLatestVersion(
 	component string,
 	secretGetterCreator KubeSecretGetterCreator,
 	rcLister rc.Lister,
+	cluster types.Cluster,
+	availVsns AvailableVersions,
 ) (types.Version, error) {
 	var latestVersion types.Version
-	latestVersions, err := GetAvailableVersions(NewAvailableVersionsFromAPI("", secretGetterCreator, rcLister))
+	latestVersions, err := GetAvailableVersions(availVsns, cluster)
 	if err != nil {
 		return types.Version{}, err
 	}
@@ -125,7 +120,6 @@ func ParseJSONCluster(rawJSON []byte) (types.Cluster, error) {
 	var cluster types.Cluster
 	err := json.Unmarshal(rawJSON, &cluster)
 	if err != nil {
-		log.Print(err)
 		return types.Cluster{}, err
 	}
 	return cluster, nil
@@ -155,14 +149,6 @@ func getDeisRCItems(rcLister rc.Lister) ([]api.ReplicationController, error) {
 		return []api.ReplicationController{}, err
 	}
 	return rcs.Items, nil
-}
-
-// getTLSClient returns a TLS-enabled http.Client
-func getTLSClient() *http.Client {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: false},
-	}
-	return &http.Client{Transport: tr}
 }
 
 // newestVersion is a temporary static implementation of a real "return newest version" function

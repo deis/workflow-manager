@@ -16,12 +16,18 @@ const (
 )
 
 // RegisterRoutes attaches handler functions to routes
-func RegisterRoutes(r *mux.Router, secretGetterCreator data.KubeSecretGetterCreator, rcLister rc.Lister) *mux.Router {
+func RegisterRoutes(
+	r *mux.Router,
+	secretGetterCreator data.KubeSecretGetterCreator,
+	rcLister rc.Lister,
+	availableVersions data.AvailableVersions,
+) *mux.Router {
+
 	clusterID := data.NewClusterIDFromPersistentStorage(secretGetterCreator)
 	r.Handle(componentsRoute, ComponentsHandler(
-		data.InstalledDeisData{},
+		data.NewInstalledDeisData(rcLister),
 		clusterID,
-		data.NewLatestReleasedComponent(secretGetterCreator, rcLister),
+		data.NewLatestReleasedComponent(secretGetterCreator, rcLister, availableVersions),
 		secretGetterCreator,
 	))
 	r.Handle(idRoute, IDHandler(clusterID))

@@ -8,23 +8,38 @@ import (
 // AvailableComponentVersion is an interface for managing component version data
 type AvailableComponentVersion interface {
 	// will have a Get method to retrieve available component version data
-	Get(component string) (types.Version, error)
+	Get(component string, cluster types.Cluster) (types.Version, error)
 }
 
-// LatestReleasedComponent fulfills the AvailableComponentVersion interface
-type LatestReleasedComponent struct {
+// latestReleasedComponent fulfills the AvailableComponentVersion interface
+type latestReleasedComponent struct {
 	secretGetterCreator KubeSecretGetterCreator
 	rcLister            rc.Lister
+	availableVersions   AvailableVersions
 }
 
-// NewLatestReleasedComponent creates a new LatestReleasedComponent using sgc as the implementation to get and create secrets
-func NewLatestReleasedComponent(sgc KubeSecretGetterCreator, rcl rc.Lister) *LatestReleasedComponent {
-	return &LatestReleasedComponent{secretGetterCreator: sgc, rcLister: rcl}
+// NewLatestReleasedComponent creates a new AvailableComponentVersion that gets the latest released component using sgc as the implementation to get and create secrets
+func NewLatestReleasedComponent(
+	sgc KubeSecretGetterCreator,
+	rcl rc.Lister,
+	availableVersions AvailableVersions,
+) AvailableComponentVersion {
+	return &latestReleasedComponent{
+		secretGetterCreator: sgc,
+		rcLister:            rcl,
+		availableVersions:   availableVersions,
+	}
 }
 
 // Get method for LatestReleasedComponent
-func (c LatestReleasedComponent) Get(component string) (types.Version, error) {
-	version, err := GetLatestVersion(component, c.secretGetterCreator, c.rcLister)
+func (c *latestReleasedComponent) Get(component string, cluster types.Cluster) (types.Version, error) {
+	version, err := GetLatestVersion(
+		component,
+		c.secretGetterCreator,
+		c.rcLister,
+		cluster,
+		c.availableVersions,
+	)
 	if err != nil {
 		return types.Version{}, err
 	}

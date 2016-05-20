@@ -35,7 +35,7 @@ func (c *testClusterID) StoreInCache(cid string) {
 // Creating a novel mock struct that fulfills the AvailableVersions interface
 type testAvailableVersions struct{}
 
-func (a testAvailableVersions) Refresh() ([]types.ComponentVersion, error) {
+func (a testAvailableVersions) Refresh(cluster types.Cluster) ([]types.ComponentVersion, error) {
 	data := getMockComponentVersions()
 	var componentVersions []types.ComponentVersion
 	_ = json.Unmarshal(data, &componentVersions)
@@ -53,7 +53,7 @@ func (a testAvailableVersions) Cached() []types.ComponentVersion {
 // Creating another mock struct that fulfills the AvailableVersions interface
 type shouldBypassAvailableVersions struct{}
 
-func (a shouldBypassAvailableVersions) Refresh() ([]types.ComponentVersion, error) {
+func (a shouldBypassAvailableVersions) Refresh(cluster types.Cluster) ([]types.ComponentVersion, error) {
 	var componentVersions []types.ComponentVersion
 	data := []byte(fmt.Sprintf(`[{
 	  "components": [
@@ -140,10 +140,10 @@ func TestGetAvailableVersions(t *testing.T) {
 	mock := getMockComponentVersions()
 	var mockVersions []types.ComponentVersion
 	assert.NoErr(t, json.Unmarshal(mock, &mockVersions))
-	versions, err := GetAvailableVersions(testAvailableVersions{})
+	versions, err := GetAvailableVersions(testAvailableVersions{}, types.Cluster{})
 	assert.NoErr(t, err)
 	assert.Equal(t, versions, mockVersions, "component versions data")
-	versions, err = GetAvailableVersions(shouldBypassAvailableVersions{})
+	versions, err = GetAvailableVersions(shouldBypassAvailableVersions{}, types.Cluster{})
 	assert.NoErr(t, err)
 	assert.Equal(t, versions, mockVersions, "component versions data")
 }

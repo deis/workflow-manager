@@ -10,6 +10,7 @@ import (
 	"github.com/arschles/assert"
 	"github.com/arschles/testsrv"
 	"github.com/deis/workflow-manager/config"
+	"github.com/deis/workflow-manager/rest"
 	"github.com/deis/workflow-manager/types"
 )
 
@@ -34,11 +35,9 @@ func TestRefreshAvailableVersions(t *testing.T) {
 	vsns := availableVersionsFromAPI{
 		rwm:             new(sync.RWMutex),
 		baseVersionsURL: srv.URLStr(),
-		clusterGetter: func() (types.Cluster, error) {
-			return types.Cluster{ID: "testCluster", Components: expectedCompVsns.Data}, nil
-		},
+		restClient:      rest.NewRealTLSClient(srv.URLStr()),
 	}
-	retCompVsns, err := vsns.Refresh()
+	retCompVsns, err := vsns.Refresh(types.Cluster{})
 	assert.NoErr(t, err)
 	assert.Equal(t, len(retCompVsns), len(expectedCompVsns.Data), "number of component versions")
 	recv := srv.AcceptN(1, 1*time.Millisecond)
