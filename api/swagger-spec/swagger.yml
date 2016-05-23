@@ -65,22 +65,6 @@ paths:
           description: unexpected error
           schema:
             $ref: "#/definitions/error"
-  /versions/{train}/{component}/latest:
-    get:
-      operationId: getComponentByLatestRelease
-      summary: "read the latest release of a component"
-      parameters:
-        - $ref: "#/parameters/trainParam"
-        - $ref: "#/parameters/componentParam"
-      responses:
-        200:
-          description: component latest release response
-          schema:
-            $ref: "#/definitions/componentVersion"
-        default:
-          description: unexpected error
-          schema:
-            $ref: "#/definitions/error"
   /versions/latest:
     post:
       operationId: getComponentsByLatestRelease
