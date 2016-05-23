@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   title: Workflow Manager
   version: 2.0.0
-basePath: /v2
+basePath: /v3
 produces:
   - application/json
 consumes:
@@ -61,22 +61,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/definitions/componentVersion"
-        default:
-          description: unexpected error
-          schema:
-            $ref: "#/definitions/error"
-  /versions/{train}/{component}/latest:
-    get:
-      operationId: getComponentByLatestRelease
-      summary: "read the latest release of a component"
-      parameters:
-        - $ref: "#/parameters/trainParam"
-        - $ref: "#/parameters/componentParam"
-      responses:
-        200:
-          description: component latest release response
-          schema:
-            $ref: "#/definitions/componentVersion"
         default:
           description: unexpected error
           schema:
