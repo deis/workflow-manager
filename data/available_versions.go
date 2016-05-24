@@ -1,6 +1,7 @@
 package data
 
 import (
+	"strings"
 	"sync"
 
 	"github.com/arschles/kubeapp/api/rc"
@@ -53,7 +54,11 @@ func (a availableVersionsFromAPI) Refresh(cluster models.Cluster) ([]models.Comp
 		cv.Component = &models.Component{}
 		cv.Version = &models.Version{}
 		cv.Component.Name = component.Component.Name
-		cv.Version.Train = component.Version.Train
+		if strings.Contains(component.Version.Version, "stable") {
+			cv.Version.Train = "stable"
+		} else {
+			cv.Version.Train = "beta"
+		}
 		reqBody.Data = append(reqBody.Data, cv)
 	}
 
