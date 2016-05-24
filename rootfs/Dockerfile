@@ -1,7 +1,6 @@
-FROM alpine:3.3
+FROM quay.io/deis/base:0.2.0
 
-RUN apk -U add ca-certificates && \
-    rm -Rf /var/cache/apk/*
-COPY ./bin/boot /bin/boot
-EXPOSE 8080
+COPY . /
+
 CMD ["/bin/boot"]
+EXPOSE 8080
