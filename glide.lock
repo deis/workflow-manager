@@ -1,10 +1,10 @@
-hash: dba20984ed8ee9cd5f8959b666bb4596a44348ef4c79d8f31c4e836e0d5bbc77
-updated: 2016-05-17T12:45:19.611039653-06:00
+hash: 344acba1c0c3d637beff814c5d273de818c3ecd758f453fea85e085c3bd93701
+updated: 2016-05-24T14:55:13.473111277-04:00
 imports:
 - name: bitbucket.org/ww/goautoneg
   version: 75cd24fc2f2c
 - name: github.com/arschles/assert
-  version: d21ecd4884be33397d1298c3738b2b4937c7f499
+  version: 5c22e2eba944d89ddd5c81b2c4175e64ee828503
 - name: github.com/arschles/kubeapp
   version: d970a2ec475267698e3cd6412b4204520b8d653d
   subpackages:
@@ -85,13 +85,13 @@ imports:
 - name: github.com/google/gofuzz
   version: bbcb9da2d746f8bdbd6a936686a0a6067ada0ec5
 - name: github.com/gorilla/context
-  version: 1ea25387ff6f684839d82767c1733ff4d4d15d0a
+  version: a8d44e7d8e4d532b6a27a02dd82abb31cc1b01bd
 - name: github.com/gorilla/mux
-  version: acf3be1b335c8ce30b2c8d51300984666f0ceefa
+  version: 9c19ed558d5df4da88e2ade9c8940d742aef0e7e
 - name: github.com/juju/ratelimit
   version: 77ed1c8a01217656d2080ad51981f6e99adaa177
 - name: github.com/kelseyhightower/envconfig
-  version: 224e93f15cc827cbc08a7694ba9ab6e7d1c10039
+  version: 91921eb4cf999321cdbeebdba5a03555800d493b
 - name: github.com/matttproud/golang_protobuf_extensions
   version: fc2b8d3a73c4867e51861bbdd5ae3c1f0869dd6a
   subpackages:
@@ -122,7 +122,7 @@ imports:
 - name: github.com/prometheus/procfs
   version: 490cc6eb5fa45bf8a8b7b73c8bc82a8160e8531d
 - name: github.com/satori/go.uuid
-  version: e673fdd4dea8a7334adbbe7f57b7e4b00bdc5502
+  version: f9ab0dce87d815821e221626b772e3475a0d2749
 - name: github.com/spf13/pflag
   version: 08b1a584251b5b62f458943640fc8ebd4d50aaa5
 - name: github.com/ugorji/go
@@ -150,8 +150,8 @@ imports:
   - pkg
   - pkg/client/unversioned
   - pkg/api
-  - pkg/api/errors
   - pkg/labels
+  - pkg/api/errors
   - pkg/api/install
   - pkg/api/meta
   - pkg/api/unversioned
@@ -182,8 +182,8 @@ imports:
   - pkg/util
   - pkg/util/intstr
   - pkg/util/rand
-  - pkg/util/validation/field
   - pkg/util/validation
+  - pkg/util/validation/field
   - pkg/api/v1
   - pkg/apimachinery
   - pkg/util/errors
