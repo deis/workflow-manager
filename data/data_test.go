@@ -7,7 +7,7 @@ import (
 
 	"github.com/arschles/assert"
 	"github.com/deis/workflow-manager/mocks"
-	"github.com/deis/workflow-manager/types"
+	"github.com/deis/workflow-manager/pkg/swagger/models"
 )
 
 const mockClusterID = "f91378a6-a815-4c20-9b0d-77b205cd3ba4"
@@ -35,26 +35,26 @@ func (c *testClusterID) StoreInCache(cid string) {
 // Creating a novel mock struct that fulfills the AvailableVersions interface
 type testAvailableVersions struct{}
 
-func (a testAvailableVersions) Refresh(cluster types.Cluster) ([]types.ComponentVersion, error) {
+func (a testAvailableVersions) Refresh(cluster models.Cluster) ([]models.ComponentVersion, error) {
 	data := getMockComponentVersions()
-	var componentVersions []types.ComponentVersion
+	var componentVersions []models.ComponentVersion
 	_ = json.Unmarshal(data, &componentVersions)
 	return componentVersions, nil
 }
 
-func (a testAvailableVersions) Store(c []types.ComponentVersion) {
+func (a testAvailableVersions) Store(c []models.ComponentVersion) {
 	return
 }
 
-func (a testAvailableVersions) Cached() []types.ComponentVersion {
+func (a testAvailableVersions) Cached() []models.ComponentVersion {
 	return nil
 }
 
 // Creating another mock struct that fulfills the AvailableVersions interface
 type shouldBypassAvailableVersions struct{}
 
-func (a shouldBypassAvailableVersions) Refresh(cluster types.Cluster) ([]types.ComponentVersion, error) {
-	var componentVersions []types.ComponentVersion
+func (a shouldBypassAvailableVersions) Refresh(cluster models.Cluster) ([]models.ComponentVersion, error) {
+	var componentVersions []models.ComponentVersion
 	data := []byte(fmt.Sprintf(`[{
 	  "components": [
 	    {
@@ -72,11 +72,11 @@ func (a shouldBypassAvailableVersions) Refresh(cluster types.Cluster) ([]types.C
 	return componentVersions, nil
 }
 
-func (a shouldBypassAvailableVersions) Store(c []types.ComponentVersion) {
+func (a shouldBypassAvailableVersions) Store(c []models.ComponentVersion) {
 	return
 }
 
-func (a shouldBypassAvailableVersions) Cached() []types.ComponentVersion {
+func (a shouldBypassAvailableVersions) Cached() []models.ComponentVersion {
 	return nil
 }
 
@@ -138,12 +138,12 @@ func TestGetID(t *testing.T) {
 // and for the passed-in Refresh() method to be ignored
 func TestGetAvailableVersions(t *testing.T) {
 	mock := getMockComponentVersions()
-	var mockVersions []types.ComponentVersion
+	var mockVersions []models.ComponentVersion
 	assert.NoErr(t, json.Unmarshal(mock, &mockVersions))
-	versions, err := GetAvailableVersions(testAvailableVersions{}, types.Cluster{})
+	versions, err := GetAvailableVersions(testAvailableVersions{}, models.Cluster{})
 	assert.NoErr(t, err)
 	assert.Equal(t, versions, mockVersions, "component versions data")
-	versions, err = GetAvailableVersions(shouldBypassAvailableVersions{}, types.Cluster{})
+	versions, err = GetAvailableVersions(shouldBypassAvailableVersions{}, models.Cluster{})
 	assert.NoErr(t, err)
 	assert.Equal(t, versions, mockVersions, "component versions data")
 }
@@ -183,7 +183,7 @@ func TestGetInstalled(t *testing.T) {
 	cluster, err := GetInstalled(mockInstalledComponents{})
 	assert.NoErr(t, err)
 	assert.Equal(t, cluster.Components[0].Component.Name, mockComponentName, "Name value")
-	assert.Equal(t, cluster.Components[0].Component.Description, mockComponentDescription, "Description value")
+	assert.Equal(t, *cluster.Components[0].Component.Description, mockComponentDescription, "Description value")
 	assert.Equal(t, cluster.Components[0].Version.Version, mockComponentVersion, "Version value")
 }
 
@@ -210,7 +210,7 @@ func TestParseJSONCluster(t *testing.T) {
 
 	assert.Equal(t, cluster.ID, mockClusterID, "ID value")
 	assert.Equal(t, cluster.Components[0].Component.Name, name, "Name value")
-	assert.Equal(t, cluster.Components[0].Component.Description, description, "Description value")
+	assert.Equal(t, *cluster.Components[0].Component.Description, description, "Description value")
 	assert.Equal(t, cluster.Components[0].Version.Version, version, "Version value")
 }
 
@@ -264,7 +264,7 @@ func getMockComponentVersions() []byte {
 	}]`, mockComponentName, mockComponentDescription, mockComponentVersion))
 }
 
-func getMockCluster(t *testing.T) types.Cluster {
+func getMockCluster(t *testing.T) models.Cluster {
 	mockData, err := mocks.GetMockCluster()
 	assert.NoErr(t, err)
 	mockCluster, err := ParseJSONCluster(mockData)
@@ -272,18 +272,18 @@ func getMockCluster(t *testing.T) types.Cluster {
 	return mockCluster
 }
 
-func getMockLatest(name string, t *testing.T) types.Version {
+func getMockLatest(name string, t *testing.T) models.Version {
 	version, err := mocks.GetMockLatest(name)
 	assert.NoErr(t, err)
 	return version
 }
 
-func assertUpdateAvailableAdded(latestComponent types.ComponentVersion, component types.ComponentVersion, t *testing.T) {
+func assertUpdateAvailableAdded(latestComponent models.ComponentVersion, component models.ComponentVersion, t *testing.T) {
 	if latestComponent.Version.Version != component.Version.Version {
-		if component.UpdateAvailable != latestComponent.Version.Version {
+		if *component.UpdateAvailable != latestComponent.Version.Version {
 			t.Fatal("failed to get back UpdateAvailable property for a component that has a newer version")
 		}
-	} else if component.UpdateAvailable != "" {
+	} else if *component.UpdateAvailable != "" {
 		t.Fatal("expected a nil string type for UpdateAvailable property at component ", component.Component.Name)
 	}
 }

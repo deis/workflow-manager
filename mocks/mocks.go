@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/deis/workflow-manager/types"
+	"github.com/deis/workflow-manager/pkg/swagger/models"
 )
 
 const mainPackage = "workflow-manager"
@@ -68,11 +68,11 @@ func (c *ClusterIDMockData) StoreInCache(cid string) {
 type LatestMockData struct{}
 
 // Get method for LatestMockData
-func (c LatestMockData) Get(component string, cluster types.Cluster) (types.Version, error) {
+func (c LatestMockData) Get(component string, cluster models.Cluster) (models.Version, error) {
 	data, err := GetMockLatest(component)
 	if err != nil {
 		log.Print(err)
-		return types.Version{}, err
+		return models.Version{}, err
 	}
 	return data, nil
 }
@@ -114,12 +114,12 @@ func GetMockClusterID() (string, error) {
 }
 
 // GetMockLatest returns a mock "latest component version" response
-func GetMockLatest(c string) (types.Version, error) {
+func GetMockLatest(c string) (models.Version, error) {
 	data, err := getText(getMocksWd() + "latest-component-version-" + c + ".txt")
 	if err != nil {
-		return types.Version{}, err
+		return models.Version{}, err
 	}
-	return types.Version{Version: data}, nil
+	return models.Version{Version: data}, nil
 }
 
 // GetMockComponentV2Beta returns a mock "latest component version" response, for v2-beta

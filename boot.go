@@ -10,26 +10,16 @@ import (
 	"github.com/deis/workflow-manager/data"
 	"github.com/deis/workflow-manager/handlers"
 	"github.com/deis/workflow-manager/jobs"
-	apiclient "github.com/deis/workflow-manager/pkg/swagger/client"
-	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
 	"github.com/gorilla/mux"
 	kcl "k8s.io/kubernetes/pkg/client/unversioned"
 )
-
-func getSwaggerClient() *apiclient.WorkflowManager {
-	// create the transport
-	transport := httptransport.New(config.Spec.VersionsAPIURL, "v3", []string{"http"})
-	apiClient := apiclient.Default
-	apiClient.SetTransport(transport)
-	return apiClient
-}
 
 func main() {
 	kubeClient, err := kcl.NewInCluster()
 	if err != nil {
 		log.Fatalf("Error creating new Kubernetes client (%s)", err)
 	}
-	apiClient := getSwaggerClient()
+	apiClient := config.GetSwaggerClient(config.Spec.VersionsAPIURL)
 	secretInterface := kubeClient.Secrets(config.Spec.DeisNamespace)
 	rcInterface := kubeClient.ReplicationControllers(config.Spec.DeisNamespace)
 	clusterID := data.NewClusterIDFromPersistentStorage(secretInterface)

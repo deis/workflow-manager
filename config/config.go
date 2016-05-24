@@ -1,6 +1,10 @@
 package config
 
-import "github.com/kelseyhightower/envconfig"
+import (
+	apiclient "github.com/deis/workflow-manager/pkg/swagger/client"
+	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
+	"github.com/kelseyhightower/envconfig"
+)
 
 // Specification config struct
 type Specification struct {
@@ -18,4 +22,12 @@ var Spec Specification
 
 func init() {
 	envconfig.Process("workflow_manager", &Spec)
+}
+
+func GetSwaggerClient(baseURL string) *apiclient.WorkflowManager {
+	// create the transport
+	transport := httptransport.New(baseURL, "v3", []string{"http"})
+	apiClient := apiclient.Default
+	apiClient.SetTransport(transport)
+	return apiClient
 }

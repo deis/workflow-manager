@@ -9,7 +9,7 @@ import (
 
 	"github.com/arschles/assert"
 	"github.com/deis/workflow-manager/data"
-	"github.com/deis/workflow-manager/types"
+	"github.com/deis/workflow-manager/pkg/swagger/models"
 	"github.com/gorilla/mux"
 )
 
@@ -62,11 +62,11 @@ const mockAvailableComponentVersion = "3.2.1"
 // Creating a novel mock struct that fulfills the data.AvailableComponentVersion interface
 type mockAvailableVersion struct{}
 
-func (c mockAvailableVersion) Get(component string, cluster types.Cluster) (types.Version, error) {
+func (c mockAvailableVersion) Get(component string, cluster models.Cluster) (models.Version, error) {
 	if component == "component" {
-		return types.Version{Version: "v2-beta"}, nil
+		return models.Version{Version: "v2-beta"}, nil
 	}
-	return types.Version{}, fmt.Errorf("mock getter only accepts 'component' arg")
+	return models.Version{}, fmt.Errorf("mock getter only accepts 'component' arg")
 }
 
 type genericJSON struct {
@@ -89,7 +89,7 @@ func TestComponentsHandler(t *testing.T) {
 	assert.NoErr(t, err)
 	assert.Equal(t, cluster.ID, mockID, "ID value")
 	assert.Equal(t, cluster.Components[0].Component.Name, mockInstalledComponentName, "Name value")
-	assert.Equal(t, cluster.Components[0].Component.Description, mockInstalledComponentDescription, "Description value")
+	assert.Equal(t, *cluster.Components[0].Component.Description, mockInstalledComponentDescription, "Description value")
 	assert.Equal(t, cluster.Components[0].Version.Version, mockInstalledComponentVersion, "Version value")
 	//TODO
 	//assert.Equal(t, cluster.Components[0].UpdateAvailable, mockAvailableComponentVersion, "available Version value")
