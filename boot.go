@@ -10,23 +10,32 @@ import (
 	"github.com/deis/workflow-manager/data"
 	"github.com/deis/workflow-manager/handlers"
 	"github.com/deis/workflow-manager/jobs"
-	"github.com/deis/workflow-manager/rest"
+	apiclient "github.com/deis/workflow-manager/pkg/swagger/client"
+	httptransport "github.com/go-swagger/go-swagger/httpkit/client"
 	"github.com/gorilla/mux"
 	kcl "k8s.io/kubernetes/pkg/client/unversioned"
 )
+
+func getSwaggerClient() *apiclient.WorkflowManager {
+	// create the transport
+	transport := httptransport.New(config.Spec.VersionsAPIURL, "v3", []string{"http"})
+	apiClient := apiclient.Default
+	apiClient.SetTransport(transport)
+	return apiClient
+}
 
 func main() {
 	kubeClient, err := kcl.NewInCluster()
 	if err != nil {
 		log.Fatalf("Error creating new Kubernetes client (%s)", err)
 	}
-	restClient := rest.NewRealTLSClient(config.Spec.VersionsAPIURL)
+	apiClient := getSwaggerClient()
 	secretInterface := kubeClient.Secrets(config.Spec.DeisNamespace)
 	rcInterface := kubeClient.ReplicationControllers(config.Spec.DeisNamespace)
 	clusterID := data.NewClusterIDFromPersistentStorage(secretInterface)
 	installedDeisData := data.NewInstalledDeisData(rcInterface)
 	availableVersion := data.NewAvailableVersionsFromAPI(
-		restClient,
+		apiClient,
 		config.Spec.VersionsAPIURL,
 		secretInterface,
 		rcInterface,
@@ -44,7 +53,7 @@ func main() {
 		availableVersion,
 		availableComponentVersion,
 	)
-	svPeriodic := jobs.NewSendVersionsPeriodic(restClient, secretInterface, rcInterface, availableVersion)
+	svPeriodic := jobs.NewSendVersionsPeriodic(apiClient, secretInterface, rcInterface, availableVersion)
 	toDo := []jobs.Periodic{glvdPeriodic, svPeriodic}
 	pollDur := time.Duration(config.Spec.Polling) * time.Second
 	log.Printf("Starting periodic jobs at interval %s", pollDur)

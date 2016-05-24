@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/deis/workflow-manager/types"
+	"github.com/deis/workflow-manager/pkg/swagger/models"
 )
 
 // SparseComponentInfo is the JSON compatible struct that holds limited data about a component
@@ -31,5 +31,5 @@ type SparseComponentAndTrainInfoJSONWrapper struct {
 // ComponentVersionsJSONWrapper is the JSON compatible struct that holds a slice of
 // types.ComponentVersion structs
 type ComponentVersionsJSONWrapper struct {
-	Data []types.ComponentVersion `json:"data"`
+	Data []models.ComponentVersion `json:"data"`
 }

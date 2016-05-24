@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/arschles/kubeapp/api/rc"
-	"github.com/deis/workflow-manager/types"
+	"github.com/deis/workflow-manager/pkg/swagger/models"
 	"k8s.io/kubernetes/pkg/api"
 	"k8s.io/kubernetes/pkg/labels"
 )
@@ -22,16 +22,16 @@ func GetCluster(
 	i ClusterID,
 	v AvailableComponentVersion,
 	secretGetterCreator KubeSecretGetterCreator,
-) (types.Cluster, error) {
+) (models.Cluster, error) {
 
 	// Populate cluster object with installed components
 	cluster, err := GetInstalled(c)
 	if err != nil {
-		return types.Cluster{}, err
+		return models.Cluster{}, err
 	}
 	err = AddUpdateData(&cluster, v, secretGetterCreator)
 	if err != nil {
-		return types.Cluster{}, err
+		return models.Cluster{}, err
 	}
 	// Get the cluster ID
 	id, err := GetID(i)
@@ -45,7 +45,7 @@ func GetCluster(
 
 // AddUpdateData adds UpdateAvailable field data to cluster components
 // Any cluster object modifications are made "in-place"
-func AddUpdateData(c *types.Cluster, v AvailableComponentVersion, secretGetterCreator KubeSecretGetterCreator) error {
+func AddUpdateData(c *models.Cluster, v AvailableComponentVersion, secretGetterCreator KubeSecretGetterCreator) error {
 	// Determine if any components have an available update
 	for i, component := range c.Components {
 		installed := component.Version.Version
@@ -55,14 +55,14 @@ func AddUpdateData(c *types.Cluster, v AvailableComponentVersion, secretGetterCr
 		}
 		newest := newestVersion(installed, latest.Version)
 		if newest != installed {
-			c.Components[i].UpdateAvailable = newest
+			c.Components[i].UpdateAvailable = &newest
 		}
 	}
 	return nil
 }
 
 // GetAvailableVersions gets available component version data from the cache. If there was a cache miss, gets the versions from the k8s and versions APIs
-func GetAvailableVersions(a AvailableVersions, cluster types.Cluster) ([]types.ComponentVersion, error) {
+func GetAvailableVersions(a AvailableVersions, cluster models.Cluster) ([]models.ComponentVersion, error) {
 	// First, check to see if we have an in-memory copy
 	data := a.Cached()
 	// If we don't have any cached data, get the data from the remote authority
@@ -77,15 +77,15 @@ func GetAvailableVersions(a AvailableVersions, cluster types.Cluster) ([]types.C
 }
 
 // GetInstalled collects all installed components and returns a Cluster
-func GetInstalled(g InstalledData) (types.Cluster, error) {
+func GetInstalled(g InstalledData) (models.Cluster, error) {
 	installed, err := g.Get()
 	if err != nil {
-		return types.Cluster{}, err
+		return models.Cluster{}, err
 	}
-	var cluster types.Cluster
+	var cluster models.Cluster
 	cluster, err = ParseJSONCluster(installed)
 	if err != nil {
-		return types.Cluster{}, err
+		return models.Cluster{}, err
 	}
 	return cluster, nil
 }
@@ -95,32 +95,32 @@ func GetLatestVersion(
 	component string,
 	secretGetterCreator KubeSecretGetterCreator,
 	rcLister rc.Lister,
-	cluster types.Cluster,
+	cluster models.Cluster,
 	availVsns AvailableVersions,
-) (types.Version, error) {
-	var latestVersion types.Version
+) (models.Version, error) {
+	var latestVersion models.Version
 	latestVersions, err := GetAvailableVersions(availVsns, cluster)
 	if err != nil {
-		return types.Version{}, err
+		return models.Version{}, err
 	}
 	for _, componentVersion := range latestVersions {
 		if componentVersion.Component.Name == component {
-			latestVersion = componentVersion.Version
+			latestVersion = *componentVersion.Version
 		}
 	}
 	if latestVersion.Version == "" {
-		return types.Version{}, fmt.Errorf("latest version not available for %s", component)
+		return models.Version{}, fmt.Errorf("latest version not available for %s", component)
 	}
 	return latestVersion, nil
 }
 
 // ParseJSONCluster converts a JSON representation of a cluster
 // to a Cluster type
-func ParseJSONCluster(rawJSON []byte) (types.Cluster, error) {
-	var cluster types.Cluster
+func ParseJSONCluster(rawJSON []byte) (models.Cluster, error) {
+	var cluster models.Cluster
 	err := json.Unmarshal(rawJSON, &cluster)
 	if err != nil {
-		return types.Cluster{}, err
+		return models.Cluster{}, err
 	}
 	return cluster, nil
 }

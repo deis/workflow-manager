@@ -2,13 +2,13 @@ package data
 
 import (
 	"github.com/arschles/kubeapp/api/rc"
-	"github.com/deis/workflow-manager/types"
+	"github.com/deis/workflow-manager/pkg/swagger/models"
 )
 
 // AvailableComponentVersion is an interface for managing component version data
 type AvailableComponentVersion interface {
 	// will have a Get method to retrieve available component version data
-	Get(component string, cluster types.Cluster) (types.Version, error)
+	Get(component string, cluster models.Cluster) (models.Version, error)
 }
 
 // latestReleasedComponent fulfills the AvailableComponentVersion interface
@@ -32,7 +32,7 @@ func NewLatestReleasedComponent(
 }
 
 // Get method for LatestReleasedComponent
-func (c *latestReleasedComponent) Get(component string, cluster types.Cluster) (types.Version, error) {
+func (c *latestReleasedComponent) Get(component string, cluster models.Cluster) (models.Version, error) {
 	version, err := GetLatestVersion(
 		component,
 		c.secretGetterCreator,
@@ -41,7 +41,7 @@ func (c *latestReleasedComponent) Get(component string, cluster types.Cluster) (
 		c.availableVersions,
 	)
 	if err != nil {
-		return types.Version{}, err
+		return models.Version{}, err
 	}
 	return version, nil
 }
