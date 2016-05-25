@@ -1,3 +1,18 @@
+### v2.0.0-beta4 -> v2.0.0-rc1
+
+#### Features
+
+ - [`b06f904`](https://github.com/deis/workflow-manager/commit/b06f9049e0c215c707882ad5073700fd706a355f) swagger: generate client stub for wfm API spec
+ - [`159503f`](https://github.com/deis/workflow-manager/commit/159503fa960ba1e77ed42332dd9276ea753bd9df) swagger: add swagger spec for the workflow manger api
+
+#### Fixes
+
+ - [`03891e3`](https://github.com/deis/workflow-manager/commit/03891e3bddbfe156005cd7f7ea7024a6e2860377) swagger: rename the model definitions for backward compatibility
+
+#### Maintenance
+
+ - [`d1a4889`](https://github.com/deis/workflow-manager/commit/d1a488933be8a808fd918e47ecd9a085eff17db3) Dockerfile: Refactor image to use ubuntu-slim
+
 ### v2.0.0-beta3 -> v2.0.0-beta4
 
 #### Documentation
