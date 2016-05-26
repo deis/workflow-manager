@@ -2,7 +2,6 @@ swagger: "2.0"
 info:
   title: Workflow Manager
   version: 2.0.0
-basePath: /v3
 produces:
   - application/json
 consumes:
@@ -10,7 +9,7 @@ consumes:
 schemes:
   - http
 paths:
-  /versions/{train}/{component}/{release}:
+  /v3/versions/{train}/{component}/{release}:
     parameters:
       - $ref: "#/parameters/trainParam"
       - $ref: "#/parameters/componentParam"
@@ -44,7 +43,7 @@ paths:
           description: unexpected error
           schema:
             $ref: "#/definitions/error"
-  /versions/{train}/{component}:
+  /v3/versions/{train}/{component}:
     get:
       operationId: getComponentByName
       summary: "list the releases of a component"
@@ -65,7 +64,7 @@ paths:
           description: unexpected error
           schema:
             $ref: "#/definitions/error"
-  /versions/latest:
+  /v3/versions/latest:
     post:
       operationId: getComponentsByLatestRelease
       summary: "list the latest release version of the components"
@@ -93,7 +92,7 @@ paths:
           description: unexpected error
           schema:
             $ref: "#/definitions/error"
-  /clusters/count:
+  /v3/clusters/count:
     get:
       operationId: getClustersCount
       summary: "read the count of the known deis clusters"
@@ -107,7 +106,7 @@ paths:
           description: unexpected error
           schema:
             $ref: "#/definitions/error"
-  /clusters/age:
+  /v3/clusters/age:
     get:
       operationId: getClustersByAge
       summary: "list clusters"
@@ -142,7 +141,7 @@ paths:
           description: unexpected error
           schema:
             $ref: "#/definitions/error"
-  /clusters/{id}:
+  /v3/clusters/{id}:
     get:
       operationId: getClusterById
       summary: "read a cluster details"
@@ -160,11 +159,61 @@ paths:
           description: unexpected error
           schema:
             $ref: "#/definitions/error"
-  /clusters:
+  /v3/clusters:
     post:
       operationId: createClusterDetails
       summary: "create a cluster with all components"
       parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/cluster"
+      responses:
+        200:
+          description: clusters details response
+          schema:
+            $ref: "#/definitions/cluster"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
+  /v2/versions/latest:
+    post:
+      operationId: getComponentsByLatestReleaseForV2
+      summary: "list the latest release version of the components.This endpoint is to support old clients"
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/componentVersion"
+      responses:
+        200:
+          description: component releases response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/componentVersion"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
+  /v2/clusters/{id}:
+    post:
+      operationId: createClusterDetailsForV2
+      summary: "create a cluster with all components.This endpoint is to support old clients"
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
         - name: body
           in: body
           schema:
