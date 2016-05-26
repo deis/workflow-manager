@@ -19,7 +19,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error creating new Kubernetes client (%s)", err)
 	}
-	apiClient := config.GetSwaggerClient(config.Spec.VersionsAPIURL)
+	apiClient, err := config.GetSwaggerClient(config.Spec.VersionsAPIURL)
+	if err != nil {
+		log.Fatalf("Error creating new swagger api client (%s)", err)
+	}
 	secretInterface := kubeClient.Secrets(config.Spec.DeisNamespace)
 	rcInterface := kubeClient.ReplicationControllers(config.Spec.DeisNamespace)
 	clusterID := data.NewClusterIDFromPersistentStorage(secretInterface)

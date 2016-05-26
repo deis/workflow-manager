@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"sync"
 	"testing"
 
@@ -34,10 +33,12 @@ func TestRefreshAvailableVersions(t *testing.T) {
 		}
 	}))
 	defer ts.Close()
+	apiclient, err := config.GetSwaggerClient(ts.URL)
+	assert.NoErr(t, err)
 	vsns := availableVersionsFromAPI{
 		rwm:             new(sync.RWMutex),
 		baseVersionsURL: ts.URL,
-		apiClient:       config.GetSwaggerClient(strings.TrimPrefix(ts.URL, "http://")),
+		apiClient:       apiclient,
 	}
 	retCompVsns, err := vsns.Refresh(models.Cluster{})
 	assert.NoErr(t, err)
