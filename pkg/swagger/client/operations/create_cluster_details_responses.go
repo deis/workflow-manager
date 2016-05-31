@@ -54,7 +54,7 @@ type CreateClusterDetailsOK struct {
 }
 
 func (o *CreateClusterDetailsOK) Error() string {
-	return fmt.Sprintf("[POST /clusters][%d] createClusterDetailsOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /v3/clusters][%d] createClusterDetailsOK  %+v", 200, o.Payload)
 }
 
 func (o *CreateClusterDetailsOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
@@ -92,7 +92,7 @@ func (o *CreateClusterDetailsDefault) Code() int {
 }
 
 func (o *CreateClusterDetailsDefault) Error() string {
-	return fmt.Sprintf("[POST /clusters][%d] createClusterDetails default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /v3/clusters][%d] createClusterDetails default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *CreateClusterDetailsDefault) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {

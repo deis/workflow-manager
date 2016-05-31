@@ -31,7 +31,7 @@ func GetSwaggerClient(apiURL string) (*apiclient.WorkflowManager, error) {
 		return nil, err
 	}
 	// create the transport
-	transport := httptransport.New(urlDet.Host, Spec.APIVersion, []string{urlDet.Scheme})
+	transport := httptransport.New(urlDet.Host, "", []string{urlDet.Scheme})
 	apiClient := apiclient.Default
 	apiClient.SetTransport(transport)
 	return apiClient, nil
