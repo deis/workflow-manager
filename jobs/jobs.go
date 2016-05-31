@@ -1,15 +1,14 @@
 package jobs
 
 import (
-	"bytes"
-	"encoding/json"
 	"log"
 	"time"
 
 	"github.com/arschles/kubeapp/api/rc"
 	"github.com/deis/workflow-manager/config"
 	"github.com/deis/workflow-manager/data"
-	"github.com/deis/workflow-manager/rest"
+	apiclient "github.com/deis/workflow-manager/pkg/swagger/client"
+	"github.com/deis/workflow-manager/pkg/swagger/client/operations"
 )
 
 // Periodic is an interface for managing periodic job invocation
@@ -22,13 +21,13 @@ type Periodic interface {
 type sendVersions struct {
 	secretGetterCreator data.KubeSecretGetterCreator
 	rcLister            rc.Lister
-	restClient          rest.Client
+	apiClient           *apiclient.WorkflowManager
 	availableVersions   data.AvailableVersions
 }
 
 // NewSendVersionsPeriodic creates a new SendVersions using sgc and rcl as the the secret getter / creator and replication controller lister implementations (respectively)
 func NewSendVersionsPeriodic(
-	restClient rest.Client,
+	apiClient *apiclient.WorkflowManager,
 	sgc data.KubeSecretGetterCreator,
 	rcl rc.Lister,
 	availableVersions data.AvailableVersions,
@@ -36,7 +35,7 @@ func NewSendVersionsPeriodic(
 	return &sendVersions{
 		secretGetterCreator: sgc,
 		rcLister:            rcl,
-		restClient:          restClient,
+		apiClient:           apiClient,
 		availableVersions:   availableVersions,
 	}
 }
@@ -44,7 +43,7 @@ func NewSendVersionsPeriodic(
 // Do method of SendVersions
 func (s sendVersions) Do() error {
 	if config.Spec.CheckVersions {
-		err := sendVersionsImpl(s.restClient, s.secretGetterCreator, s.rcLister, s.availableVersions)
+		err := sendVersionsImpl(s.apiClient, s.secretGetterCreator, s.rcLister, s.availableVersions)
 		if err != nil {
 			return err
 		}
@@ -124,12 +123,11 @@ func runJobs(p []Periodic) {
 
 //  sendVersions sends cluster version data
 func sendVersionsImpl(
-	restClient rest.Client,
+	apiClient *apiclient.WorkflowManager,
 	secretGetterCreator data.KubeSecretGetterCreator,
 	rcLister rc.Lister,
 	availableVersions data.AvailableVersions,
 ) error {
-	var clustersRoute = "/" + config.Spec.APIVersion + "/clusters/"
 	cluster, err := data.GetCluster(
 		data.NewInstalledDeisData(rcLister),
 		data.NewClusterIDFromPersistentStorage(secretGetterCreator),
@@ -140,17 +138,11 @@ func sendVersionsImpl(
 		log.Println("error getting installed components data")
 		return err
 	}
-	js, err := json.Marshal(cluster)
-	if err != nil {
-		log.Println("error making a JSON representation of cluster data")
-		return err
-	}
 
-	resp, err := restClient.Do("POST", rest.JSContentTypeHeader, bytes.NewBuffer(js), clustersRoute, cluster.ID)
+	_, err = apiClient.Operations.CreateClusterDetails(&operations.CreateClusterDetailsParams{Body: &cluster})
 	if err != nil {
 		log.Println("error sending diagnostic data")
 		return err
 	}
-	defer resp.Body.Close()
 	return nil
 }

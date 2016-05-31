@@ -56,7 +56,7 @@ type GetComponentByNameOK struct {
 }
 
 func (o *GetComponentByNameOK) Error() string {
-	return fmt.Sprintf("[GET /versions/{train}/{component}][%d] getComponentByNameOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /v3/versions/{train}/{component}][%d] getComponentByNameOK  %+v", 200, o.Payload)
 }
 
 func (o *GetComponentByNameOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
@@ -92,7 +92,7 @@ func (o *GetComponentByNameDefault) Code() int {
 }
 
 func (o *GetComponentByNameDefault) Error() string {
-	return fmt.Sprintf("[GET /versions/{train}/{component}][%d] getComponentByName default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /v3/versions/{train}/{component}][%d] getComponentByName default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *GetComponentByNameDefault) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {

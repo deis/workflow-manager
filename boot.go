@@ -10,7 +10,6 @@ import (
 	"github.com/deis/workflow-manager/data"
 	"github.com/deis/workflow-manager/handlers"
 	"github.com/deis/workflow-manager/jobs"
-	"github.com/deis/workflow-manager/rest"
 	"github.com/gorilla/mux"
 	kcl "k8s.io/kubernetes/pkg/client/unversioned"
 )
@@ -20,13 +19,16 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error creating new Kubernetes client (%s)", err)
 	}
-	restClient := rest.NewRealTLSClient(config.Spec.VersionsAPIURL)
+	apiClient, err := config.GetSwaggerClient(config.Spec.VersionsAPIURL)
+	if err != nil {
+		log.Fatalf("Error creating new swagger api client (%s)", err)
+	}
 	secretInterface := kubeClient.Secrets(config.Spec.DeisNamespace)
 	rcInterface := kubeClient.ReplicationControllers(config.Spec.DeisNamespace)
 	clusterID := data.NewClusterIDFromPersistentStorage(secretInterface)
 	installedDeisData := data.NewInstalledDeisData(rcInterface)
 	availableVersion := data.NewAvailableVersionsFromAPI(
-		restClient,
+		apiClient,
 		config.Spec.VersionsAPIURL,
 		secretInterface,
 		rcInterface,
@@ -44,7 +46,7 @@ func main() {
 		availableVersion,
 		availableComponentVersion,
 	)
-	svPeriodic := jobs.NewSendVersionsPeriodic(restClient, secretInterface, rcInterface, availableVersion)
+	svPeriodic := jobs.NewSendVersionsPeriodic(apiClient, secretInterface, rcInterface, availableVersion)
 	toDo := []jobs.Periodic{glvdPeriodic, svPeriodic}
 	pollDur := time.Duration(config.Spec.Polling) * time.Second
 	log.Printf("Starting periodic jobs at interval %s", pollDur)

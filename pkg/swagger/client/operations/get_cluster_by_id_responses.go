@@ -54,7 +54,7 @@ type GetClusterByIDOK struct {
 }
 
 func (o *GetClusterByIDOK) Error() string {
-	return fmt.Sprintf("[GET /clusters/{id}][%d] getClusterByIdOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /v3/clusters/{id}][%d] getClusterByIdOK  %+v", 200, o.Payload)
 }
 
 func (o *GetClusterByIDOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
@@ -92,7 +92,7 @@ func (o *GetClusterByIDDefault) Code() int {
 }
 
 func (o *GetClusterByIDDefault) Error() string {
-	return fmt.Sprintf("[GET /clusters/{id}][%d] getClusterById default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /v3/clusters/{id}][%d] getClusterById default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *GetClusterByIDDefault) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {

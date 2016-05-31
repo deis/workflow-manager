@@ -5,6 +5,7 @@ import (
 
 	"github.com/satori/go.uuid"
 	"k8s.io/kubernetes/pkg/api"
+	apierrors "k8s.io/kubernetes/pkg/api/errors"
 )
 
 // ClusterID is an interface for managing cluster ID data
@@ -50,7 +51,8 @@ func NewClusterIDFromPersistentStorage(sgc KubeSecretGetterCreator) ClusterID {
 // Get is the ClusterID interface implementation
 func (c clusterIDFromPersistentStorage) Get() (string, error) {
 	secret, err := c.secretGetterCreator.Get(wfmSecretName)
-	if err != nil {
+	//If we don't have the secret we shouldn't be returning error and instead a create a new one
+	if err != nil && !apierrors.IsNotFound(err) {
 		return "", err
 	}
 	// if we don't have secret data for the cluster ID we assume a new cluster

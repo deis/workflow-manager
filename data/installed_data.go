@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/arschles/kubeapp/api/rc"
-	"github.com/deis/workflow-manager/types"
+	"github.com/deis/workflow-manager/pkg/swagger/models"
 )
 
 // InstalledData is an interface for managing installed cluster metadata
@@ -29,13 +29,16 @@ func (g *installedDeisData) Get() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	var cluster types.Cluster
+	var cluster models.Cluster
 	for _, rc := range rcItems {
-		component := types.ComponentVersion{}
+		component := models.ComponentVersion{}
+		component.Component = &models.Component{}
+		component.Version = &models.Version{}
 		component.Component.Name = rc.Name
-		component.Component.Description = rc.Annotations["chart.helm.sh/description"]
+		desc := rc.Annotations["chart.helm.sh/description"]
+		component.Component.Description = &desc
 		component.Version.Version = rc.Annotations["chart.helm.sh/version"]
-		cluster.Components = append(cluster.Components, component)
+		cluster.Components = append(cluster.Components, &component)
 	}
 	js, err := json.Marshal(cluster)
 	if err != nil {

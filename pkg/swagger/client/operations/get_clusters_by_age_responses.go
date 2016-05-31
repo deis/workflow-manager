@@ -56,7 +56,7 @@ type GetClustersByAgeOK struct {
 }
 
 func (o *GetClustersByAgeOK) Error() string {
-	return fmt.Sprintf("[GET /clusters/age][%d] getClustersByAgeOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /v3/clusters/age][%d] getClustersByAgeOK  %+v", 200, o.Payload)
 }
 
 func (o *GetClustersByAgeOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
@@ -92,7 +92,7 @@ func (o *GetClustersByAgeDefault) Code() int {
 }
 
 func (o *GetClustersByAgeDefault) Error() string {
-	return fmt.Sprintf("[GET /clusters/age][%d] getClustersByAge default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /v3/clusters/age][%d] getClustersByAge default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *GetClustersByAgeDefault) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {

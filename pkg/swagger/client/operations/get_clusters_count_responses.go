@@ -54,7 +54,7 @@ type GetClustersCountOK struct {
 }
 
 func (o *GetClustersCountOK) Error() string {
-	return fmt.Sprintf("[GET /clusters/count][%d] getClustersCountOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /v3/clusters/count][%d] getClustersCountOK  %+v", 200, o.Payload)
 }
 
 func (o *GetClustersCountOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
@@ -90,7 +90,7 @@ func (o *GetClustersCountDefault) Code() int {
 }
 
 func (o *GetClustersCountDefault) Error() string {
-	return fmt.Sprintf("[GET /clusters/count][%d] getClustersCount default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /v3/clusters/count][%d] getClustersCount default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *GetClustersCountDefault) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {

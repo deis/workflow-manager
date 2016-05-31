@@ -54,7 +54,7 @@ type GetComponentByReleaseOK struct {
 }
 
 func (o *GetComponentByReleaseOK) Error() string {
-	return fmt.Sprintf("[GET /versions/{train}/{component}/{release}][%d] getComponentByReleaseOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /v3/versions/{train}/{component}/{release}][%d] getComponentByReleaseOK  %+v", 200, o.Payload)
 }
 
 func (o *GetComponentByReleaseOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
@@ -92,7 +92,7 @@ func (o *GetComponentByReleaseDefault) Code() int {
 }
 
 func (o *GetComponentByReleaseDefault) Error() string {
-	return fmt.Sprintf("[GET /versions/{train}/{component}/{release}][%d] getComponentByRelease default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /v3/versions/{train}/{component}/{release}][%d] getComponentByRelease default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *GetComponentByReleaseDefault) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {

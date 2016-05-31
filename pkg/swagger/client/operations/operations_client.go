@@ -34,7 +34,7 @@ func (a *Client) CreateClusterDetails(params *CreateClusterDetailsParams) (*Crea
 	result, err := a.transport.Submit(&client.Operation{
 		ID:                 "createClusterDetails",
 		Method:             "POST",
-		PathPattern:        "/clusters",
+		PathPattern:        "/v3/clusters",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -45,6 +45,31 @@ func (a *Client) CreateClusterDetails(params *CreateClusterDetailsParams) (*Crea
 		return nil, err
 	}
 	return result.(*CreateClusterDetailsOK), nil
+}
+
+/*
+CreateClusterDetailsForV2 creates a cluster with all components this endpoint is to support old clients
+*/
+func (a *Client) CreateClusterDetailsForV2(params *CreateClusterDetailsForV2Params) (*CreateClusterDetailsForV2OK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewCreateClusterDetailsForV2Params()
+	}
+
+	result, err := a.transport.Submit(&client.Operation{
+		ID:                 "createClusterDetailsForV2",
+		Method:             "POST",
+		PathPattern:        "/v2/clusters/{id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &CreateClusterDetailsForV2Reader{formats: a.formats},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*CreateClusterDetailsForV2OK), nil
 }
 
 /*
@@ -59,7 +84,7 @@ func (a *Client) GetClusterByID(params *GetClusterByIDParams) (*GetClusterByIDOK
 	result, err := a.transport.Submit(&client.Operation{
 		ID:                 "getClusterById",
 		Method:             "GET",
-		PathPattern:        "/clusters/{id}",
+		PathPattern:        "/v3/clusters/{id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -84,7 +109,7 @@ func (a *Client) GetClustersByAge(params *GetClustersByAgeParams) (*GetClustersB
 	result, err := a.transport.Submit(&client.Operation{
 		ID:                 "getClustersByAge",
 		Method:             "GET",
-		PathPattern:        "/clusters/age",
+		PathPattern:        "/v3/clusters/age",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -109,7 +134,7 @@ func (a *Client) GetClustersCount(params *GetClustersCountParams) (*GetClustersC
 	result, err := a.transport.Submit(&client.Operation{
 		ID:                 "getClustersCount",
 		Method:             "GET",
-		PathPattern:        "/clusters/count",
+		PathPattern:        "/v3/clusters/count",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -134,7 +159,7 @@ func (a *Client) GetComponentByName(params *GetComponentByNameParams) (*GetCompo
 	result, err := a.transport.Submit(&client.Operation{
 		ID:                 "getComponentByName",
 		Method:             "GET",
-		PathPattern:        "/versions/{train}/{component}",
+		PathPattern:        "/v3/versions/{train}/{component}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -159,7 +184,7 @@ func (a *Client) GetComponentByRelease(params *GetComponentByReleaseParams) (*Ge
 	result, err := a.transport.Submit(&client.Operation{
 		ID:                 "getComponentByRelease",
 		Method:             "GET",
-		PathPattern:        "/versions/{train}/{component}/{release}",
+		PathPattern:        "/v3/versions/{train}/{component}/{release}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -184,7 +209,7 @@ func (a *Client) GetComponentsByLatestRelease(params *GetComponentsByLatestRelea
 	result, err := a.transport.Submit(&client.Operation{
 		ID:                 "getComponentsByLatestRelease",
 		Method:             "POST",
-		PathPattern:        "/versions/latest",
+		PathPattern:        "/v3/versions/latest",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -195,6 +220,31 @@ func (a *Client) GetComponentsByLatestRelease(params *GetComponentsByLatestRelea
 		return nil, err
 	}
 	return result.(*GetComponentsByLatestReleaseOK), nil
+}
+
+/*
+GetComponentsByLatestReleaseForV2 lists the latest release version of the components this endpoint is to support old clients
+*/
+func (a *Client) GetComponentsByLatestReleaseForV2(params *GetComponentsByLatestReleaseForV2Params) (*GetComponentsByLatestReleaseForV2OK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetComponentsByLatestReleaseForV2Params()
+	}
+
+	result, err := a.transport.Submit(&client.Operation{
+		ID:                 "getComponentsByLatestReleaseForV2",
+		Method:             "POST",
+		PathPattern:        "/v2/versions/latest",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GetComponentsByLatestReleaseForV2Reader{formats: a.formats},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*GetComponentsByLatestReleaseForV2OK), nil
 }
 
 /*
@@ -209,7 +259,7 @@ func (a *Client) PublishComponentRelease(params *PublishComponentReleaseParams) 
 	result, err := a.transport.Submit(&client.Operation{
 		ID:                 "publishComponentRelease",
 		Method:             "POST",
-		PathPattern:        "/versions/{train}/{component}/{release}",
+		PathPattern:        "/v3/versions/{train}/{component}/{release}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},

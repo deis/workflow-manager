@@ -54,7 +54,7 @@ type PublishComponentReleaseOK struct {
 }
 
 func (o *PublishComponentReleaseOK) Error() string {
-	return fmt.Sprintf("[POST /versions/{train}/{component}/{release}][%d] publishComponentReleaseOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /v3/versions/{train}/{component}/{release}][%d] publishComponentReleaseOK  %+v", 200, o.Payload)
 }
 
 func (o *PublishComponentReleaseOK) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
@@ -92,7 +92,7 @@ func (o *PublishComponentReleaseDefault) Code() int {
 }
 
 func (o *PublishComponentReleaseDefault) Error() string {
-	return fmt.Sprintf("[POST /versions/{train}/{component}/{release}][%d] publishComponentRelease default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /v3/versions/{train}/{component}/{release}][%d] publishComponentRelease default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *PublishComponentReleaseDefault) readResponse(response client.Response, consumer httpkit.Consumer, formats strfmt.Registry) error {
