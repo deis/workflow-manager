@@ -108,6 +108,52 @@ func (o *GetComponentsByLatestReleaseForV2Default) readResponse(response client.
 	return nil
 }
 
+/*GetComponentsByLatestReleaseForV2Body get components by latest release for v2 body
+
+swagger:model GetComponentsByLatestReleaseForV2Body
+*/
+type GetComponentsByLatestReleaseForV2Body struct {
+
+	/* data
+	 */
+	Data []*models.ComponentVersion `json:"data,omitempty"`
+}
+
+// Validate validates this get components by latest release for v2 body
+func (o *GetComponentsByLatestReleaseForV2Body) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := o.validateData(formats); err != nil {
+		// prop
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (o *GetComponentsByLatestReleaseForV2Body) validateData(formats strfmt.Registry) error {
+
+	if swag.IsZero(o.Data) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(o.Data); i++ {
+
+		if o.Data[i] != nil {
+
+			if err := o.Data[i].Validate(formats); err != nil {
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 /*GetComponentsByLatestReleaseForV2OKBodyBody get components by latest release for v2 o k body body
 
 swagger:model GetComponentsByLatestReleaseForV2OKBodyBody
@@ -140,52 +186,6 @@ func (o *GetComponentsByLatestReleaseForV2OKBodyBody) validateData(formats strfm
 
 	if err := validate.Required("getComponentsByLatestReleaseForV2OK"+"."+"data", "body", o.Data); err != nil {
 		return err
-	}
-
-	for i := 0; i < len(o.Data); i++ {
-
-		if o.Data[i] != nil {
-
-			if err := o.Data[i].Validate(formats); err != nil {
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-/*GetComponentsByLatestReleaseForV2Body get components by latest release for v2 body
-
-swagger:model GetComponentsByLatestReleaseForV2Body
-*/
-type GetComponentsByLatestReleaseForV2Body struct {
-
-	/* data
-	 */
-	Data []*models.ComponentVersion `json:"data,omitempty"`
-}
-
-// Validate validates this get components by latest release for v2 body
-func (o *GetComponentsByLatestReleaseForV2Body) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.validateData(formats); err != nil {
-		// prop
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *GetComponentsByLatestReleaseForV2Body) validateData(formats strfmt.Registry) error {
-
-	if swag.IsZero(o.Data) { // not required
-		return nil
 	}
 
 	for i := 0; i < len(o.Data); i++ {

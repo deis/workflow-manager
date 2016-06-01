@@ -9,6 +9,15 @@ consumes:
 schemes:
   - http
 paths:
+  /ping:
+    get:
+      operationId: ping
+      summary: "ping the versions API server"
+      responses:
+        200:
+          description: server ping success
+        default:
+          description: unexpected error
   /v3/versions/{train}/{component}/{release}:
     parameters:
       - $ref: "#/parameters/trainParam"

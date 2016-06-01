@@ -248,6 +248,31 @@ func (a *Client) GetComponentsByLatestReleaseForV2(params *GetComponentsByLatest
 }
 
 /*
+Ping pings the versions API server
+*/
+func (a *Client) Ping(params *PingParams) (*PingOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewPingParams()
+	}
+
+	result, err := a.transport.Submit(&client.Operation{
+		ID:                 "ping",
+		Method:             "GET",
+		PathPattern:        "/ping",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &PingReader{formats: a.formats},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*PingOK), nil
+}
+
+/*
 PublishComponentRelease publishes a new release for the component
 */
 func (a *Client) PublishComponentRelease(params *PublishComponentReleaseParams) (*PublishComponentReleaseOK, error) {
