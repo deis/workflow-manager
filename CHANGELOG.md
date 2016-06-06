@@ -1,3 +1,9 @@
+### v2.0.0-rc1 -> v2.0.0-rc2
+
+#### Features
+
+- [`c15c268`](https://github.com/deis/workflow-manager/commit/c15c268e42ac1769b8037e5fe3d0aeb2cd2f2e4d) pkg,api: add ping path to swagger spec
+
 ### v2.0.0-beta4 -> v2.0.0-rc1
 
 #### Features
