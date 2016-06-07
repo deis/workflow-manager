@@ -11,12 +11,9 @@ making it easy to deploy and manage applications on your own servers.
 For more information about Deis Workflow, please visit the main project page at
 https://github.com/deis/workflow.
 
-## Beta Status
-
-Many Deis components are currently in beta status, and we welcome your input!
-If you have feedback on Workflow Manager, please [submit an issue][issues]. If
-you'd like to participate in development, please read the "Development" section
-below and [submit a pull request][prs].
+We welcome your input! If you have feedback on Workflow Manager,
+please [submit an issue][issues]. If you'd like to participate in development,
+please read the "Development" section below and [submit a pull request][prs].
 
 ## Stay up to date
 
