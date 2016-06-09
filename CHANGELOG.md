@@ -1,3 +1,13 @@
+### v2.0.0-rc2 -> v2.0.0
+
+#### Documentation
+
+- [`55cf8a1`](https://github.com/deis/workflow-manager/commit/55cf8a198761e5b6f6710f95a8058a3fe378c261) CHANGELOG.md: add entry for v2.0.0-rc2
+
+#### Maintenance
+
+- [`e798cbd`](https://github.com/deis/workflow-manager/commit/e798cbd9c74487caec9a83740bf72441266db6d8) README.md: remove beta status
+
 ### v2.0.0-rc1 -> v2.0.0-rc2
 
 #### Features
