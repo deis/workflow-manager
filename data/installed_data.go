@@ -25,7 +25,7 @@ func NewInstalledDeisData(rcl rc.Lister) InstalledData {
 
 // Get method for InstalledDeisData
 func (g *installedDeisData) Get() ([]byte, error) {
-	rcItems, err := getDeisRCItems(g.rcLister)
+	rcItems, err := getRCItems(g.rcLister)
 	if err != nil {
 		return nil, err
 	}
