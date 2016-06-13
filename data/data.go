@@ -139,9 +139,9 @@ func NewestSemVer(v1 string, v2 string) (string, error) {
 	return v1, nil
 }
 
-// getDeisRCItems is a helper function that returns a slice of
-// ReplicationController objects in the "deis" namespace
-func getDeisRCItems(rcLister rc.Lister) ([]api.ReplicationController, error) {
+// getRCItems is a helper function that returns a slice of
+// ReplicationController objects given a rc.Lister interface
+func getRCItems(rcLister rc.Lister) ([]api.ReplicationController, error) {
 	rcs, err := rcLister.List(api.ListOptions{
 		LabelSelector: labels.Everything(),
 	})
