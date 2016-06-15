@@ -151,6 +151,23 @@ func getRCItems(rcLister rc.Lister) ([]api.ReplicationController, error) {
 	return rcs.Items, nil
 }
 
+// GetDoctorInfo collects doctor info and return DoctorInfo struct
+func GetDoctorInfo(
+	c InstalledData,
+	i ClusterID,
+	v AvailableComponentVersion,
+	secretGetterCreator KubeSecretGetterCreator,
+) (models.DoctorInfo, error) {
+	cluster, err := GetCluster(c, i, v, secretGetterCreator)
+	if err != nil {
+		return nil, err
+	}
+	doctor := models.DoctorInfo{
+		cluster: &cluster,
+	}
+	return doctor, nil
+}
+
 // newestVersion is a temporary static implementation of a real "return newest version" function
 func newestVersion(v1 string, v2 string) string {
 	return v1

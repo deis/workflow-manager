@@ -297,6 +297,31 @@ func (a *Client) PublishComponentRelease(params *PublishComponentReleaseParams) 
 	return result.(*PublishComponentReleaseOK), nil
 }
 
+/*
+PublishDoctorInfo publishes doctor info to workflow manager API
+*/
+func (a *Client) PublishDoctorInfo(params *PublishDoctorInfoParams) (*PublishDoctorInfoOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewPublishDoctorInfoParams()
+	}
+
+	result, err := a.transport.Submit(&client.Operation{
+		ID:                 "publishDoctorInfo",
+		Method:             "POST",
+		PathPattern:        "/v3/doctor/{uuid}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &PublishDoctorInfoReader{formats: a.formats},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*PublishDoctorInfoOK), nil
+}
+
 // SetTransport changes the transport on the client
 func (a *Client) SetTransport(transport client.Transport) {
 	a.transport = transport

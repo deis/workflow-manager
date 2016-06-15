@@ -52,6 +52,24 @@ paths:
           description: unexpected error
           schema:
             $ref: "#/definitions/error"
+  /v3/doctor/{uuid}:
+    parameters:
+      - $ref: "#/parameters/UUID"
+    post:
+      operationId: publishDoctorInfo
+      summary: "publish doctor info to Workflow Manager API"
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/doctorInfo"
+      responses:
+        200:
+          description: publish doctorInfo response
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
   /v3/versions/{train}/{component}:
     get:
       operationId: getComponentByName
@@ -255,6 +273,12 @@ parameters:
     in: path
     description: The release version of the deis component, eg., 2.0.0-beta2
     required: true
+  UUID:
+    name: uuid
+    type: string
+    in: path
+    description: A universal Id to represent a sepcific request or report
+    required: true
 definitions:
   cluster:
     type: object
@@ -275,6 +299,13 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/componentVersion"
+  doctorInfo:
+    type: object
+    required:
+      - cluster
+    properties:
+      cluster:
+        $ref: "#/definitions/cluster"
   componentVersion:
     type: object
     properties:

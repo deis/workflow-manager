@@ -54,7 +54,7 @@ func main() {
 	defer close(ch)
 
 	// Get a new router, with handler functions
-	r := handlers.RegisterRoutes(mux.NewRouter(), secretInterface, rcInterface, availableVersion)
+	r := handlers.RegisterRoutes(mux.NewRouter(), secretInterface, rcInterface, availableVersion, apiClient)
 	// Bind to a port and pass our router in
 	hostStr := fmt.Sprintf(":%s", config.Spec.Port)
 	log.Printf("Serving on %s", hostStr)

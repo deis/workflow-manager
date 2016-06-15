@@ -7,12 +7,15 @@ import (
 
 	"github.com/arschles/kubeapp/api/rc"
 	"github.com/deis/workflow-manager/data"
+	"github.com/deis/workflow-manager/pkg/swagger/client/operations"
 	"github.com/gorilla/mux"
+	"github.com/satori/go.uuid"
 )
 
 const (
 	componentsRoute = "/components" // resource value for components route
 	idRoute         = "/id"         // resource value for ID route
+	doctorRoute     = "/doctor"
 )
 
 // RegisterRoutes attaches handler functions to routes
@@ -21,6 +24,7 @@ func RegisterRoutes(
 	secretGetterCreator data.KubeSecretGetterCreator,
 	rcLister rc.Lister,
 	availableVersions data.AvailableVersions,
+	apiClient *apiclient.WorkflowManager,
 ) *mux.Router {
 
 	clusterID := data.NewClusterIDFromPersistentStorage(secretGetterCreator)
@@ -31,6 +35,13 @@ func RegisterRoutes(
 		secretGetterCreator,
 	))
 	r.Handle(idRoute, IDHandler(clusterID))
+	r.Handle(doctorRoute, DoctorHandler(
+		data.NewInstalledDeisData(rcLister),
+		clusterID,
+		data.NewLatestReleasedComponent(secretGetterCreator, rcLister, availableVersions),
+		secretGetterCreator,
+		apiclient,
+	))
 	return r
 }
 
@@ -49,6 +60,28 @@ func ComponentsHandler(
 		}
 		if err := json.NewEncoder(w).Encode(cluster); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	})
+}
+
+// DoctorHandler route handler
+func DoctorHandler(
+	c data.InstalledData,
+	i data.ClusterID,
+	v data.AvailableComponentVersion,
+	secretGetterCreator data.KubeSecretGetterCreator,
+	apiClient *apiclient.WorkflowManager,
+) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		doctor, err := data.GetDoctorInfo(c, i, v, secretGetterCreator)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		_, err = apiClient.Operations.PublishDoctorInfo(&operations.PublishDoctorInfoParams{Body: doctor, UUID: uuid.NewV4().String()})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 	})
 }
