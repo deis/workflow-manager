@@ -160,10 +160,10 @@ func GetDoctorInfo(
 ) (models.DoctorInfo, error) {
 	cluster, err := GetCluster(c, i, v, secretGetterCreator)
 	if err != nil {
-		return nil, err
+		return models.DoctorInfo{}, err
 	}
 	doctor := models.DoctorInfo{
-		cluster: &cluster,
+		Cluster: &cluster,
 	}
 	return doctor, nil
 }

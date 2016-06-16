@@ -55,6 +55,18 @@ paths:
   /v3/doctor/{uuid}:
     parameters:
       - $ref: "#/parameters/UUID"
+    get:
+      operationId: getDoctorInfo
+      summary: "get the specified doctor report as per UUID"
+      responses:
+        200:
+          description: doctor get response
+          schema:
+            $ref: "#/definitions/doctorInfo"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
     post:
       operationId: publishDoctorInfo
       summary: "publish doctor info to Workflow Manager API"
