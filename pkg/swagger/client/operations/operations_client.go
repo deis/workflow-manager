@@ -248,6 +248,31 @@ func (a *Client) GetComponentsByLatestReleaseForV2(params *GetComponentsByLatest
 }
 
 /*
+GetDoctorInfo gets the specified doctor report as per UUID
+*/
+func (a *Client) GetDoctorInfo(params *GetDoctorInfoParams) (*GetDoctorInfoOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetDoctorInfoParams()
+	}
+
+	result, err := a.transport.Submit(&client.Operation{
+		ID:                 "getDoctorInfo",
+		Method:             "GET",
+		PathPattern:        "/v3/doctor/{uuid}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GetDoctorInfoReader{formats: a.formats},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*GetDoctorInfoOK), nil
+}
+
+/*
 Ping pings the versions API server
 */
 func (a *Client) Ping(params *PingParams) (*PingOK, error) {
@@ -295,6 +320,31 @@ func (a *Client) PublishComponentRelease(params *PublishComponentReleaseParams) 
 		return nil, err
 	}
 	return result.(*PublishComponentReleaseOK), nil
+}
+
+/*
+PublishDoctorInfo publishes doctor info to workflow manager API
+*/
+func (a *Client) PublishDoctorInfo(params *PublishDoctorInfoParams) (*PublishDoctorInfoOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewPublishDoctorInfoParams()
+	}
+
+	result, err := a.transport.Submit(&client.Operation{
+		ID:                 "publishDoctorInfo",
+		Method:             "POST",
+		PathPattern:        "/v3/doctor/{uuid}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &PublishDoctorInfoReader{formats: a.formats},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*PublishDoctorInfoOK), nil
 }
 
 // SetTransport changes the transport on the client
