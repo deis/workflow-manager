@@ -157,17 +157,19 @@ func TestGetCluster(t *testing.T) {
 		NewFakeKubeSecretGetterCreator(nil, nil),
 	)
 	assert.NoErr(t, err)
-	assert.Equal(t, cluster.ID, mockCluster.ID, "ID value")
-	for i, component := range cluster.Components {
-		// verify that GetCluster returned the expected mock Component data
-		assert.Equal(t, component.Component, mockCluster.Components[i].Component, "Component value")
-		// verify that GetCluster returned the expected mock Version data
-		assert.Equal(t, component.Version, mockCluster.Components[i].Version, "Version property")
-		// TODO https://github.com/deis/workflow-manager/issues/52
-		// latestComponent := getMockLatest(component.Component.Name, t)
-		// verify that the expected "UpdateAvailable" field values were added
-		// assertUpdateAvailableAdded(latestComponent, cluster.Components[i], t)
-	}
+	assert.Equal(t, cluster, mockCluster, "clusters")
+}
+
+func TestGetDoctorInfo(t *testing.T) {
+	mockCluster := getMockCluster(t)
+	doctorInfo, err := GetDoctorInfo(
+		mocks.InstalledMockData{},
+		&mocks.ClusterIDMockData{},
+		mocks.LatestMockData{},
+		NewFakeKubeSecretGetterCreator(nil, nil),
+	)
+	assert.NoErr(t, err)
+	assert.Equal(t, *doctorInfo.Cluster, mockCluster, "clusters")
 }
 
 func TestAddUpdateData(t *testing.T) {
@@ -276,14 +278,4 @@ func getMockLatest(name string, t *testing.T) models.Version {
 	version, err := mocks.GetMockLatest(name)
 	assert.NoErr(t, err)
 	return version
-}
-
-func assertUpdateAvailableAdded(latestComponent models.ComponentVersion, component models.ComponentVersion, t *testing.T) {
-	if latestComponent.Version.Version != component.Version.Version {
-		if *component.UpdateAvailable != latestComponent.Version.Version {
-			t.Fatal("failed to get back UpdateAvailable property for a component that has a newer version")
-		}
-	} else if *component.UpdateAvailable != "" {
-		t.Fatal("expected a nil string type for UpdateAvailable property at component ", component.Component.Name)
-	}
 }

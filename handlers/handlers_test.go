@@ -11,6 +11,7 @@ import (
 	"github.com/deis/workflow-manager/data"
 	"github.com/deis/workflow-manager/pkg/swagger/models"
 	"github.com/gorilla/mux"
+	"github.com/satori/go.uuid"
 )
 
 const mockInstalledComponentName = "component"
@@ -93,6 +94,35 @@ func TestComponentsHandler(t *testing.T) {
 	assert.Equal(t, cluster.Components[0].Version.Version, mockInstalledComponentVersion, "Version value")
 	//TODO
 	//assert.Equal(t, cluster.Components[0].UpdateAvailable, mockAvailableComponentVersion, "available Version value")
+}
+
+func TestDoctorHandler(t *testing.T) {
+	doctorHandler := DoctorHandler(
+		mockInstalledComponents{},
+		&mockClusterID{},
+		mockAvailableVersion{},
+		data.NewFakeKubeSecretGetterCreator(nil, nil),
+	)
+	resp, err := getTestHandlerResponse(doctorHandler)
+	assert.NoErr(t, err)
+	assert200(t, resp)
+	respData, err := ioutil.ReadAll(resp.Body)
+	assert.NoErr(t, err)
+	// verify that the return data is a uuid string
+	doctorID1, err := uuid.FromString(string(respData[:]))
+	assert.NoErr(t, err)
+	// invoke the handler a 2nd time to ensure that unique IDs are created for
+	// each request
+	resp2, err := getTestHandlerResponse(doctorHandler)
+	assert.NoErr(t, err)
+	assert200(t, resp2)
+	respData2, err := ioutil.ReadAll(resp2.Body)
+	assert.NoErr(t, err)
+	doctorID2, err := uuid.FromString(string(respData2[:]))
+	assert.NoErr(t, err)
+	if doctorID1 == doctorID2 {
+		t.Error("DoctorHandler should return a unique ID for every invocation")
+	}
 }
 
 func TestIDHandler(t *testing.T) {
