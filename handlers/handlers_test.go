@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/arschles/assert"
+	"github.com/deis/workflow-manager/config"
 	"github.com/deis/workflow-manager/data"
 	"github.com/deis/workflow-manager/pkg/swagger/models"
 	"github.com/gorilla/mux"
@@ -97,11 +99,21 @@ func TestComponentsHandler(t *testing.T) {
 }
 
 func TestDoctorHandler(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		if err := json.NewEncoder(w).Encode([]byte("")); err != nil {
+			http.Error(w, "error encoding JSON", http.StatusInternalServerError)
+			return
+		}
+	}))
+	defer ts.Close()
+	apiClient, err := config.GetSwaggerClient(ts.URL)
 	doctorHandler := DoctorHandler(
 		mockInstalledComponents{},
 		&mockClusterID{},
 		mockAvailableVersion{},
 		data.NewFakeKubeSecretGetterCreator(nil, nil),
+		apiClient,
 	)
 	resp, err := getTestHandlerResponse(doctorHandler)
 	assert.NoErr(t, err)

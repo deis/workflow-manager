@@ -8,6 +8,7 @@ import (
 	"github.com/arschles/kubeapp/api/rc"
 	"github.com/deis/workflow-manager/config"
 	"github.com/deis/workflow-manager/data"
+	apiclient "github.com/deis/workflow-manager/pkg/swagger/client"
 	"github.com/deis/workflow-manager/pkg/swagger/client/operations"
 	"github.com/gorilla/mux"
 	"github.com/satori/go.uuid"
@@ -35,11 +36,13 @@ func RegisterRoutes(
 		secretGetterCreator,
 	))
 	r.Handle(idRoute, IDHandler(clusterID))
+	doctorAPIClient, _ := config.GetSwaggerClient(config.Spec.DoctorAPIURL)
 	r.Handle(doctorRoute, DoctorHandler(
 		data.NewInstalledDeisData(rcLister),
 		clusterID,
 		data.NewLatestReleasedComponent(secretGetterCreator, rcLister, availableVersions),
 		secretGetterCreator,
+		doctorAPIClient,
 	)).Methods("POST")
 	return r
 }
@@ -69,6 +72,7 @@ func DoctorHandler(
 	i data.ClusterID,
 	v data.AvailableComponentVersion,
 	secretGetterCreator data.KubeSecretGetterCreator,
+	apiClient *apiclient.WorkflowManager,
 ) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		doctor, err := data.GetDoctorInfo(c, i, v, secretGetterCreator)
@@ -76,7 +80,6 @@ func DoctorHandler(
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		apiClient, err := config.GetSwaggerClient(config.Spec.DoctorAPIURL)
 		uid := uuid.NewV4().String()
 		_, err = apiClient.Operations.PublishDoctorInfo(&operations.PublishDoctorInfoParams{Body: &doctor, UUID: uid})
 		if err != nil {
