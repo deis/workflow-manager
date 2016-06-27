@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -eo pipefail
 uid=$(curl --silent --show-error  -X POST  localhost:8080/doctor)
-echo "Information sent to deis doctor is available at the following url  ${DOCTOR_API_URL}/${uid}"
+echo "Information sent to deis doctor is available at the following url  ${DOCTOR_API_URL}/v3/doctor/${uid}"
