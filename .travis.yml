@@ -10,4 +10,6 @@ services:
 install:
   - make bootstrap
 script:
-  - make test build docker-build
+  - make test-cover build docker-build
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

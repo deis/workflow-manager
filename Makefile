@@ -43,6 +43,10 @@ test:
 	${SWAGGER_CMD} validate ./api/swagger-spec/swagger.yml
 	${DEV_ENV_CMD} sh -c 'go test -v $$(glide nv)'
 
+test-cover:
+	${DEV_ENV_CMD} test-cover.sh
+
+
 test-style:
 	${DEV_ENV_CMD} shellcheck $(SHELL_SCRIPTS)
 

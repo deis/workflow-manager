@@ -1,3 +1,4 @@
 rootfs/bin/boot
 vendor/
 workflow-manager
+coverage.txt
