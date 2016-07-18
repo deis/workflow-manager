@@ -35,6 +35,7 @@ func main() {
 	)
 	availableComponentVersion := data.NewLatestReleasedComponent(secretInterface, rcInterface, availableVersion)
 
+	pollDur := time.Duration(config.Spec.Polling) * time.Second
 	// we want to do the following jobs according to our remote API interval:
 	// 1. get latest stable deis component versions
 	// 2. send diagnostic data, if appropriate
@@ -45,12 +46,19 @@ func main() {
 		clusterID,
 		availableVersion,
 		availableComponentVersion,
+		pollDur,
 	)
-	svPeriodic := jobs.NewSendVersionsPeriodic(apiClient, secretInterface, rcInterface, availableVersion)
+
+	svPeriodic := jobs.NewSendVersionsPeriodic(
+		apiClient,
+		secretInterface,
+		rcInterface,
+		availableVersion,
+		pollDur,
+	)
 	toDo := []jobs.Periodic{glvdPeriodic, svPeriodic}
-	pollDur := time.Duration(config.Spec.Polling) * time.Second
 	log.Printf("Starting periodic jobs at interval %s", pollDur)
-	ch := jobs.DoPeriodic(toDo, time.Duration(config.Spec.Polling)*time.Second)
+	ch := jobs.DoPeriodic(toDo)
 	defer close(ch)
 
 	// Get a new router, with handler functions
