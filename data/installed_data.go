@@ -3,7 +3,7 @@ package data
 import (
 	"encoding/json"
 
-	"github.com/arschles/kubeapp/api/rc"
+	"github.com/deis/workflow-manager/k8s"
 	"github.com/deis/workflow-manager/pkg/swagger/models"
 )
 
@@ -15,17 +15,17 @@ type InstalledData interface {
 
 // InstalledDeisData fulfills the InstalledData interface
 type installedDeisData struct {
-	rcLister rc.Lister
+	k8sResources *k8s.ResourceInterfaceNamespaced
 }
 
 // NewInstalledDeisData returns a new InstalledDeisData using rcl as the rc.Lister implementation
-func NewInstalledDeisData(rcl rc.Lister) InstalledData {
-	return &installedDeisData{rcLister: rcl}
+func NewInstalledDeisData(ri *k8s.ResourceInterfaceNamespaced) InstalledData {
+	return &installedDeisData{k8sResources: ri}
 }
 
 // Get method for InstalledDeisData
 func (g *installedDeisData) Get() ([]byte, error) {
-	rcItems, err := getRCItems(g.rcLister)
+	rcItems, err := k8s.GetReplicationControllers(g.k8sResources.ReplicationControllers())
 	if err != nil {
 		return nil, err
 	}

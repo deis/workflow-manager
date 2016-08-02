@@ -17,6 +17,6 @@ import:
   repo: https://github.com/belua/inf
   vcs: git
 - package: github.com/arschles/testsrv
-- package: github.com/arschles/kubeapp
+- package: github.com/deis/kubeapp
   subpackages:
   - api

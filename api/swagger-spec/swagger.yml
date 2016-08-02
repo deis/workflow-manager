@@ -311,13 +311,72 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/componentVersion"
+  k8sResource:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        type: object
+  namespace:
+    type: object
+    required:
+      - name
+      - daemonSets
+      - deployments
+      - events
+      - pods
+      - replicaSets
+      - replicationControllers
+      - services
+    properties:
+      name:
+        type: string
+      daemonSets:
+        type: array
+        items:
+          $ref: "#/definitions/k8sResource"
+      deployments:
+        type: array
+        items:
+          $ref: "#/definitions/k8sResource"
+      events:
+        type: array
+        items:
+          $ref: "#/definitions/k8sResource"
+      pods:
+        type: array
+        items:
+          $ref: "#/definitions/k8sResource"
+      replicaSets:
+        type: array
+        items:
+          $ref: "#/definitions/k8sResource"
+      replicationControllers:
+        type: array
+        items:
+          $ref: "#/definitions/k8sResource"
+      services:
+        type: array
+        items:
+          $ref: "#/definitions/k8sResource"
   doctorInfo:
     type: object
     required:
-      - cluster
+      - workflow
+      - nodes
+      - namespaces
     properties:
-      cluster:
+      workflow:
         $ref: "#/definitions/cluster"
+      nodes:
+        type: array
+        items:
+          $ref: "#/definitions/k8sResource"
+      namespaces:
+        type: array
+        items:
+          $ref: "#/definitions/namespace"
   componentVersion:
     type: object
     properties:

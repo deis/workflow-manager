@@ -39,6 +39,49 @@ func (g mockInstalledComponents) Get() ([]byte, error) {
 	}`, mockInstalledComponentName, mockInstalledComponentDescription, mockInstalledComponentVersion)), nil
 }
 
+// Creating a novel mock struct that fulfills the data.RunningK8sData interface
+type mockRunningK8sData struct{}
+
+func (g mockRunningK8sData) DaemonSets() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+func (g mockRunningK8sData) Deployments() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+func (g mockRunningK8sData) Events() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+func (g mockRunningK8sData) Nodes() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+func (g mockRunningK8sData) Pods() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+func (g mockRunningK8sData) ReplicaSets() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+func (g mockRunningK8sData) ReplicationControllers() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+func (g mockRunningK8sData) Services() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
 const mockID = "faa31f63-d8dc-42e3-9568-405d20a3f755"
 
 // Creating a novel mock struct that fulfills the data.ClusterID interface
@@ -81,7 +124,6 @@ func TestComponentsHandler(t *testing.T) {
 		mockInstalledComponents{},
 		&mockClusterID{},
 		mockAvailableVersion{},
-		data.NewFakeKubeSecretGetterCreator(nil, nil),
 	)
 	resp, err := getTestHandlerResponse(componentsHandler)
 	assert.NoErr(t, err)
@@ -110,9 +152,9 @@ func TestDoctorHandler(t *testing.T) {
 	apiClient, err := config.GetSwaggerClient(ts.URL)
 	doctorHandler := DoctorHandler(
 		mockInstalledComponents{},
+		mockRunningK8sData{}, // TODO: mock k8s node data
 		&mockClusterID{},
 		mockAvailableVersion{},
-		data.NewFakeKubeSecretGetterCreator(nil, nil),
 		apiClient,
 	)
 	resp, err := getTestHandlerResponse(doctorHandler)

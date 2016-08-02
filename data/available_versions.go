@@ -3,7 +3,6 @@ package data
 import (
 	"sync"
 
-	"github.com/arschles/kubeapp/api/rc"
 	"github.com/deis/workflow-manager/config"
 	apiclient "github.com/deis/workflow-manager/pkg/swagger/client"
 	"github.com/deis/workflow-manager/pkg/swagger/client/operations"
@@ -31,8 +30,6 @@ type availableVersionsFromAPI struct {
 func NewAvailableVersionsFromAPI(
 	apiClient *apiclient.WorkflowManager,
 	baseVersionsURL string,
-	secretGetterCreator KubeSecretGetterCreator,
-	rcLister rc.Lister,
 ) AvailableVersions {
 	if baseVersionsURL == "" {
 		baseVersionsURL = config.Spec.VersionsAPIURL

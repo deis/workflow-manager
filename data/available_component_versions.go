@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/arschles/kubeapp/api/rc"
+	"github.com/deis/workflow-manager/k8s"
 	"github.com/deis/workflow-manager/pkg/swagger/models"
 )
 
@@ -13,21 +13,18 @@ type AvailableComponentVersion interface {
 
 // latestReleasedComponent fulfills the AvailableComponentVersion interface
 type latestReleasedComponent struct {
-	secretGetterCreator KubeSecretGetterCreator
-	rcLister            rc.Lister
-	availableVersions   AvailableVersions
+	k8sResources *k8s.ResourceInterfaceNamespaced
+	availableVersions AvailableVersions
 }
 
 // NewLatestReleasedComponent creates a new AvailableComponentVersion that gets the latest released component using sgc as the implementation to get and create secrets
 func NewLatestReleasedComponent(
-	sgc KubeSecretGetterCreator,
-	rcl rc.Lister,
+	ri *k8s.ResourceInterfaceNamespaced,
 	availableVersions AvailableVersions,
 ) AvailableComponentVersion {
 	return &latestReleasedComponent{
-		secretGetterCreator: sgc,
-		rcLister:            rcl,
-		availableVersions:   availableVersions,
+		k8sResources: ri,
+		availableVersions: availableVersions,
 	}
 }
 
@@ -35,8 +32,6 @@ func NewLatestReleasedComponent(
 func (c *latestReleasedComponent) Get(component string, cluster models.Cluster) (models.Version, error) {
 	version, err := GetLatestVersion(
 		component,
-		c.secretGetterCreator,
-		c.rcLister,
 		cluster,
 		c.availableVersions,
 	)

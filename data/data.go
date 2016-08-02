@@ -3,12 +3,12 @@ package data
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 
-	"github.com/arschles/kubeapp/api/rc"
+	"github.com/deis/workflow-manager/config"
+	"github.com/deis/workflow-manager/k8s"
 	"github.com/deis/workflow-manager/pkg/swagger/models"
-	"k8s.io/kubernetes/pkg/api"
-	"k8s.io/kubernetes/pkg/labels"
 )
 
 const (
@@ -21,7 +21,6 @@ func GetCluster(
 	c InstalledData,
 	i ClusterID,
 	v AvailableComponentVersion,
-	secretGetterCreator KubeSecretGetterCreator,
 ) (models.Cluster, error) {
 
 	// Populate cluster object with installed components
@@ -29,9 +28,8 @@ func GetCluster(
 	if err != nil {
 		return models.Cluster{}, err
 	}
-	err = AddUpdateData(&cluster, v, secretGetterCreator)
-	if err != nil {
-		return models.Cluster{}, err
+	if err := AddUpdateData(&cluster, v); err != nil {
+		log.Printf("unable to decorate cluster data with available updates data: %#v", err)
 	}
 	// Get the cluster ID
 	id, err := GetID(i)
@@ -45,7 +43,7 @@ func GetCluster(
 
 // AddUpdateData adds UpdateAvailable field data to cluster components
 // Any cluster object modifications are made "in-place"
-func AddUpdateData(c *models.Cluster, v AvailableComponentVersion, secretGetterCreator KubeSecretGetterCreator) error {
+func AddUpdateData(c *models.Cluster, v AvailableComponentVersion) error {
 	// Determine if any components have an available update
 	for i, component := range c.Components {
 		installed := component.Version.Version
@@ -93,8 +91,6 @@ func GetInstalled(g InstalledData) (models.Cluster, error) {
 // GetLatestVersion returns the latest known version of a deis component
 func GetLatestVersion(
 	component string,
-	secretGetterCreator KubeSecretGetterCreator,
-	rcLister rc.Lister,
 	cluster models.Cluster,
 	availVsns AvailableVersions,
 ) (models.Version, error) {
@@ -118,8 +114,7 @@ func GetLatestVersion(
 // to a Cluster type
 func ParseJSONCluster(rawJSON []byte) (models.Cluster, error) {
 	var cluster models.Cluster
-	err := json.Unmarshal(rawJSON, &cluster)
-	if err != nil {
+	if err := json.Unmarshal(rawJSON, &cluster); err != nil {
 		return models.Cluster{}, err
 	}
 	return cluster, nil
@@ -139,33 +134,77 @@ func NewestSemVer(v1 string, v2 string) (string, error) {
 	return v1, nil
 }
 
-// getRCItems is a helper function that returns a slice of
-// ReplicationController objects given a rc.Lister interface
-func getRCItems(rcLister rc.Lister) ([]api.ReplicationController, error) {
-	rcs, err := rcLister.List(api.ListOptions{
-		LabelSelector: labels.Everything(),
-	})
-	if err != nil {
-		return []api.ReplicationController{}, err
-	}
-	return rcs.Items, nil
-}
-
 // GetDoctorInfo collects doctor info and return DoctorInfo struct
 func GetDoctorInfo(
-	c InstalledData,
+	c InstalledData, // workflow cluster data
+	k k8s.RunningK8sData, // k8s data
 	i ClusterID,
 	v AvailableComponentVersion,
-	secretGetterCreator KubeSecretGetterCreator,
 ) (models.DoctorInfo, error) {
-	cluster, err := GetCluster(c, i, v, secretGetterCreator)
+	cluster, err := GetCluster(c, i, v)
 	if err != nil {
 		return models.DoctorInfo{}, err
 	}
+	nodes := getK8sNodes(k)
+	namespaces := []*models.Namespace{getK8sDeisNamespace(k)}
 	doctor := models.DoctorInfo{
-		Cluster: &cluster,
+		Workflow:   &cluster,
+		Nodes:      nodes,
+		Namespaces: namespaces,
 	}
 	return doctor, nil
+}
+
+// getK8sDeisNamespace is a helper function that returns data
+// from the "deis" K8s namespace for RESTful consumption
+func getK8sDeisNamespace(k k8s.RunningK8sData) *models.Namespace {
+	pods, err := k8s.GetPodsModels(k)
+	if err != nil {
+		log.Printf("unable to get K8s pods data: %#v", err)
+	}
+	services, err := k8s.GetServicesModels(k)
+	if err != nil {
+		log.Printf("unable to get K8s services data: %#v", err)
+	}
+	replicationControllers, err := k8s.GetReplicationControllersModels(k)
+	if err != nil {
+		log.Printf("unable to get K8s RC data: %#v", err)
+	}
+	replicaSets, err := k8s.GetReplicaSetsModels(k)
+	if err != nil {
+		log.Printf("unable to get K8s replicaSets data: %#v", err)
+	}
+	daemonSets, err := k8s.GetDaemonSetsModels(k)
+	if err != nil {
+		log.Printf("unable to get K8s daemonSets data: %#v", err)
+	}
+	deployments, err := k8s.GetDeploymentsModels(k)
+	if err != nil {
+		log.Printf("unable to get K8s deployments data: %#v", err)
+	}
+	events, err := k8s.GetEventsModels(k)
+	if err != nil {
+		log.Printf("unable to get K8s events data: %#v", err)
+	}
+	return &models.Namespace{
+		Name:                   config.Spec.DeisNamespace,
+		DaemonSets:             daemonSets,
+		Deployments:            deployments,
+		Events:                 events,
+		Pods:                   pods,
+		ReplicaSets:            replicaSets,
+		ReplicationControllers: replicationControllers,
+		Services:               services,
+	}
+}
+
+// getK8sNodes is a helper function that returns K8s nodes data for RESTful consumption
+func getK8sNodes(k k8s.RunningK8sData) []*models.K8sResource {
+	nodes, err := k8s.GetNodesModels(k)
+	if err != nil {
+		log.Println("unable to get K8s nodes data")
+	}
+	return nodes
 }
 
 // newestVersion is a temporary static implementation of a real "return newest version" function

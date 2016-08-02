@@ -1,7 +1,6 @@
 package data
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -30,54 +29,6 @@ func (c testClusterID) Cached() string {
 
 func (c *testClusterID) StoreInCache(cid string) {
 	c.cache = cid
-}
-
-// Creating a novel mock struct that fulfills the AvailableVersions interface
-type testAvailableVersions struct{}
-
-func (a testAvailableVersions) Refresh(cluster models.Cluster) ([]models.ComponentVersion, error) {
-	data := getMockComponentVersions()
-	var componentVersions []models.ComponentVersion
-	_ = json.Unmarshal(data, &componentVersions)
-	return componentVersions, nil
-}
-
-func (a testAvailableVersions) Store(c []models.ComponentVersion) {
-	return
-}
-
-func (a testAvailableVersions) Cached() []models.ComponentVersion {
-	return nil
-}
-
-// Creating another mock struct that fulfills the AvailableVersions interface
-type shouldBypassAvailableVersions struct{}
-
-func (a shouldBypassAvailableVersions) Refresh(cluster models.Cluster) ([]models.ComponentVersion, error) {
-	var componentVersions []models.ComponentVersion
-	data := []byte(fmt.Sprintf(`[{
-	  "components": [
-	    {
-	      "component": {
-	        "name": "bypass me",
-	        "description": "bypass me"
-	      },
-	      "version": {
-	        "version": "v2-bypass"
-	      }
-	    }
-	  ]
-	}]`))
-	_ = json.Unmarshal(data, &componentVersions)
-	return componentVersions, nil
-}
-
-func (a shouldBypassAvailableVersions) Store(c []models.ComponentVersion) {
-	return
-}
-
-func (a shouldBypassAvailableVersions) Cached() []models.ComponentVersion {
-	return nil
 }
 
 // Creating a novel mock struct that fulfills the InstalledData interface
@@ -133,28 +84,12 @@ func TestGetID(t *testing.T) {
 	assert.Equal(t, id, "something else", "cluster ID value")
 }
 
-// Calls GetAvailableVersions twice, the first time we expect our passed-in struct w/ Refresh() method
-// to be invoked, the 2nd time we expect to receive the same value back (cached in memory)
-// and for the passed-in Refresh() method to be ignored
-func TestGetAvailableVersions(t *testing.T) {
-	mock := getMockComponentVersions()
-	var mockVersions []models.ComponentVersion
-	assert.NoErr(t, json.Unmarshal(mock, &mockVersions))
-	versions, err := GetAvailableVersions(testAvailableVersions{}, models.Cluster{})
-	assert.NoErr(t, err)
-	assert.Equal(t, versions, mockVersions, "component versions data")
-	versions, err = GetAvailableVersions(shouldBypassAvailableVersions{}, models.Cluster{})
-	assert.NoErr(t, err)
-	assert.Equal(t, versions, mockVersions, "component versions data")
-}
-
 func TestGetCluster(t *testing.T) {
 	mockCluster := getMockCluster(t)
 	cluster, err := GetCluster(
 		mocks.InstalledMockData{},
 		&mocks.ClusterIDMockData{},
 		mocks.LatestMockData{},
-		NewFakeKubeSecretGetterCreator(nil, nil),
 	)
 	assert.NoErr(t, err)
 	assert.Equal(t, cluster, mockCluster, "clusters")
@@ -164,18 +99,18 @@ func TestGetDoctorInfo(t *testing.T) {
 	mockCluster := getMockCluster(t)
 	doctorInfo, err := GetDoctorInfo(
 		mocks.InstalledMockData{},
+		mocks.RunningK8sMockData{}, // TODO: add k8s mock data
 		&mocks.ClusterIDMockData{},
 		mocks.LatestMockData{},
-		NewFakeKubeSecretGetterCreator(nil, nil),
 	)
 	assert.NoErr(t, err)
-	assert.Equal(t, *doctorInfo.Cluster, mockCluster, "clusters")
+	assert.Equal(t, *doctorInfo.Workflow, mockCluster, "clusters")
 }
 
 func TestAddUpdateData(t *testing.T) {
 	mockCluster := getMockCluster(t)
 	// AddUpdateData should add an "UpdateAvailable" field to any components whose versions are out-of-date
-	err := AddUpdateData(&mockCluster, mocks.LatestMockData{}, NewFakeKubeSecretGetterCreator(nil, nil))
+	err := AddUpdateData(&mockCluster, mocks.LatestMockData{})
 	assert.NoErr(t, err)
 	//TODO: when newestVersion is implemented, actually test for the addition of "UpdateAvailable" fields.
 	// tracked in https://github.com/deis/workflow-manager/issues/52

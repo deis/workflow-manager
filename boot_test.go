@@ -23,16 +23,15 @@ func newServer(apiClient *apiclient.WorkflowManager) *httptest.Server {
 		mocks.InstalledMockData{},
 		&mocks.ClusterIDMockData{},
 		mocks.LatestMockData{},
-		data.NewFakeKubeSecretGetterCreator(nil, nil),
 	)
 	r.Handle("/components", compHdl)
 	idHdl := handlers.IDHandler(&mocks.ClusterIDMockData{})
 	r.Handle("/id", idHdl)
 	docHdl := handlers.DoctorHandler(
 		mocks.InstalledMockData{},
+		mocks.RunningK8sMockData{}, // TODO: mock k8s node data
 		&mocks.ClusterIDMockData{},
 		mocks.LatestMockData{},
-		data.NewFakeKubeSecretGetterCreator(nil, nil),
 		apiClient,
 	)
 	r.Handle("/doctor", docHdl).Methods("POST")

@@ -39,6 +39,57 @@ func (g InstalledMockData) Get() ([]byte, error) {
 	return data, nil
 }
 
+// RunningK8sMockData data struct
+type RunningK8sMockData struct{}
+
+// DaemonSets method for RunningK8sMockData
+func (k RunningK8sMockData) DaemonSets() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+// Deployments method for RunningK8sMockData
+func (k RunningK8sMockData) Deployments() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+// Events method for RunningK8sMockData
+func (k RunningK8sMockData) Events() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+// Nodes method for RunningK8sMockData
+func (k RunningK8sMockData) Nodes() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+// Pods method for RunningK8sMockData
+func (k RunningK8sMockData) Pods() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+// ReplicaSets method for RunningK8sMockData
+func (k RunningK8sMockData) ReplicaSets() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+// ReplicationControllers method for RunningK8sMockData
+func (k RunningK8sMockData) ReplicationControllers() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
+// Services method for RunningK8sMockData
+func (k RunningK8sMockData) Services() ([]*models.K8sResource, error) {
+	// TODO: implement
+	return []*models.K8sResource{}, nil
+}
+
 // ClusterIDMockData mock data struct
 type ClusterIDMockData struct {
 	cache string

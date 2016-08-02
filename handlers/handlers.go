@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/arschles/kubeapp/api/rc"
 	"github.com/deis/workflow-manager/config"
 	"github.com/deis/workflow-manager/data"
+	"github.com/deis/workflow-manager/k8s"
 	apiclient "github.com/deis/workflow-manager/pkg/swagger/client"
 	"github.com/deis/workflow-manager/pkg/swagger/client/operations"
 	"github.com/gorilla/mux"
@@ -23,25 +23,23 @@ const (
 // RegisterRoutes attaches handler functions to routes
 func RegisterRoutes(
 	r *mux.Router,
-	secretGetterCreator data.KubeSecretGetterCreator,
-	rcLister rc.Lister,
-	availableVersions data.AvailableVersions,
+	availVers data.AvailableVersions,
+	k8sResources *k8s.ResourceInterfaceNamespaced,
 ) *mux.Router {
 
-	clusterID := data.NewClusterIDFromPersistentStorage(secretGetterCreator)
+	clusterID := data.NewClusterIDFromPersistentStorage(k8sResources.Secrets())
 	r.Handle(componentsRoute, ComponentsHandler(
-		data.NewInstalledDeisData(rcLister),
+		data.NewInstalledDeisData(k8sResources),
 		clusterID,
-		data.NewLatestReleasedComponent(secretGetterCreator, rcLister, availableVersions),
-		secretGetterCreator,
+		data.NewLatestReleasedComponent(k8sResources, availVers),
 	))
 	r.Handle(idRoute, IDHandler(clusterID))
 	doctorAPIClient, _ := config.GetSwaggerClient(config.Spec.DoctorAPIURL)
 	r.Handle(doctorRoute, DoctorHandler(
-		data.NewInstalledDeisData(rcLister),
+		data.NewInstalledDeisData(k8sResources),
+		k8s.NewRunningK8sData(k8sResources),
 		clusterID,
-		data.NewLatestReleasedComponent(secretGetterCreator, rcLister, availableVersions),
-		secretGetterCreator,
+		data.NewLatestReleasedComponent(k8sResources, availVers),
 		doctorAPIClient,
 	)).Methods("POST")
 	return r
@@ -49,13 +47,12 @@ func RegisterRoutes(
 
 // ComponentsHandler route handler
 func ComponentsHandler(
-	c data.InstalledData,
-	i data.ClusterID,
-	v data.AvailableComponentVersion,
-	secretGetterCreator data.KubeSecretGetterCreator,
+	workflow data.InstalledData,
+	clusterID data.ClusterID,
+	availVers data.AvailableComponentVersion,
 ) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cluster, err := data.GetCluster(c, i, v, secretGetterCreator)
+		cluster, err := data.GetCluster(workflow, clusterID, availVers)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -68,14 +65,14 @@ func ComponentsHandler(
 
 // DoctorHandler route handler
 func DoctorHandler(
-	c data.InstalledData,
-	i data.ClusterID,
-	v data.AvailableComponentVersion,
-	secretGetterCreator data.KubeSecretGetterCreator,
+	workflow data.InstalledData,
+	k8sData k8s.RunningK8sData,
+	clusterID data.ClusterID,
+	availVers data.AvailableComponentVersion,
 	apiClient *apiclient.WorkflowManager,
 ) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		doctor, err := data.GetDoctorInfo(c, i, v, secretGetterCreator)
+		doctor, err := data.GetDoctorInfo(workflow, k8sData, clusterID, availVers)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

@@ -10,6 +10,7 @@ import (
 	"github.com/deis/workflow-manager/data"
 	"github.com/deis/workflow-manager/handlers"
 	"github.com/deis/workflow-manager/jobs"
+	"github.com/deis/workflow-manager/k8s"
 	"github.com/gorilla/mux"
 	kcl "k8s.io/kubernetes/pkg/client/unversioned"
 )
@@ -23,25 +24,20 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error creating new swagger api client (%s)", err)
 	}
-	secretInterface := kubeClient.Secrets(config.Spec.DeisNamespace)
-	rcInterface := kubeClient.ReplicationControllers(config.Spec.DeisNamespace)
-	clusterID := data.NewClusterIDFromPersistentStorage(secretInterface)
-	installedDeisData := data.NewInstalledDeisData(rcInterface)
+	deisK8sResources := k8s.NewResourceInterfaceNamespaced(kubeClient, config.Spec.DeisNamespace)
+	clusterID := data.NewClusterIDFromPersistentStorage(deisK8sResources.Secrets())
+	installedDeisData := data.NewInstalledDeisData(deisK8sResources)
 	availableVersion := data.NewAvailableVersionsFromAPI(
 		apiClient,
 		config.Spec.VersionsAPIURL,
-		secretInterface,
-		rcInterface,
 	)
-	availableComponentVersion := data.NewLatestReleasedComponent(secretInterface, rcInterface, availableVersion)
+	availableComponentVersion := data.NewLatestReleasedComponent(deisK8sResources, availableVersion)
 
 	pollDur := time.Duration(config.Spec.Polling) * time.Second
 	// we want to do the following jobs according to our remote API interval:
 	// 1. get latest stable deis component versions
 	// 2. send diagnostic data, if appropriate
 	glvdPeriodic := jobs.NewGetLatestVersionDataPeriodic(
-		secretInterface,
-		rcInterface,
 		installedDeisData,
 		clusterID,
 		availableVersion,
@@ -51,8 +47,7 @@ func main() {
 
 	svPeriodic := jobs.NewSendVersionsPeriodic(
 		apiClient,
-		secretInterface,
-		rcInterface,
+		deisK8sResources,
 		availableVersion,
 		pollDur,
 	)
@@ -62,7 +57,7 @@ func main() {
 	defer close(ch)
 
 	// Get a new router, with handler functions
-	r := handlers.RegisterRoutes(mux.NewRouter(), secretInterface, rcInterface, availableVersion)
+	r := handlers.RegisterRoutes(mux.NewRouter(), availableVersion, deisK8sResources)
 	// Bind to a port and pass our router in
 	hostStr := fmt.Sprintf(":%s", config.Spec.Port)
 	log.Printf("Serving on %s", hostStr)

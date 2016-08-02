@@ -3,6 +3,7 @@ package data
 import (
 	"sync"
 
+	"github.com/deis/workflow-manager/k8s"
 	"github.com/satori/go.uuid"
 	"k8s.io/kubernetes/pkg/api"
 	apierrors "k8s.io/kubernetes/pkg/api/errors"
@@ -36,11 +37,11 @@ func GetID(id ClusterID) (string, error) {
 type clusterIDFromPersistentStorage struct {
 	rwm                 *sync.RWMutex
 	cache               string
-	secretGetterCreator KubeSecretGetterCreator
+	secretGetterCreator k8s.KubeSecretGetterCreator
 }
 
 // NewClusterIDFromPersistentStorage returns a new ClusterID implementation that uses the kubernetes API to get its cluster information
-func NewClusterIDFromPersistentStorage(sgc KubeSecretGetterCreator) ClusterID {
+func NewClusterIDFromPersistentStorage(sgc k8s.KubeSecretGetterCreator) ClusterID {
 	return &clusterIDFromPersistentStorage{
 		rwm:                 new(sync.RWMutex),
 		cache:               "",
