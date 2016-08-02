@@ -250,7 +250,7 @@ func (a *Client) GetComponentsByLatestReleaseForV2(params *GetComponentsByLatest
 /*
 GetDoctorInfo gets the specified doctor report as per UUID
 */
-func (a *Client) GetDoctorInfo(params *GetDoctorInfoParams) (*GetDoctorInfoOK, error) {
+func (a *Client) GetDoctorInfo(params *GetDoctorInfoParams, authInfo client.AuthInfoWriter) (*GetDoctorInfoOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewGetDoctorInfoParams()
@@ -265,6 +265,7 @@ func (a *Client) GetDoctorInfo(params *GetDoctorInfoParams) (*GetDoctorInfoOK, e
 		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &GetDoctorInfoReader{formats: a.formats},
+		AuthInfo:           authInfo,
 	})
 	if err != nil {
 		return nil, err

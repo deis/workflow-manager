@@ -58,6 +58,8 @@ paths:
     get:
       operationId: getDoctorInfo
       summary: "get the specified doctor report as per UUID"
+      security:
+        - basic: []
       responses:
         200:
           description: doctor get response
@@ -291,6 +293,9 @@ parameters:
     in: path
     description: A universal Id to represent a sepcific request or report
     required: true
+securityDefinitions:
+  basic:
+    type: basic
 definitions:
   cluster:
     type: object
