@@ -102,12 +102,18 @@ func (u getLatestVersionData) Frequency() time.Duration {
 	return u.frequency
 }
 
-// DoPeriodic calls p.Do() every p.Frequency() on each element p in pSlice. For each p in pSlice,
-// a new goroutine is started, and the returned channel can be closed to stop all of the goroutines
+// DoPeriodic calls p.Do() once, and then again every p.Frequency() on each element p in pSlice.
+// For each p in pSlice, a new goroutine is started, and the returned channel can be closed
+// to stop all of the goroutines.
 func DoPeriodic(pSlice []Periodic) chan<- struct{} {
 	doneCh := make(chan struct{})
 	for _, p := range pSlice {
 		go func(p Periodic) {
+			// execute once at the beginning
+			err := p.Do()
+			if err != nil {
+				log.Printf("periodic job ran and returned error (%s)", err)
+			}
 			ticker := time.NewTicker(p.Frequency())
 			for {
 				select {
