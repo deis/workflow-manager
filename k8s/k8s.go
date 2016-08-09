@@ -69,8 +69,9 @@ func (rkd *runningK8sData) DaemonSets() ([]*models.K8sResource, error) {
 	}
 	ret := make([]*models.K8sResource, len(ds))
 	for i, d := range ds {
+		d2 := d // grab a value copy of "d" to enforce block scope heap reference, and avoid shadowing non-block scope "d"
 		daemonSet := &models.K8sResource{
-			Data: &d,
+			Data: &d2,
 		}
 		ret[i] = daemonSet
 	}
@@ -85,8 +86,9 @@ func (rkd *runningK8sData) Deployments() ([]*models.K8sResource, error) {
 	}
 	ret := make([]*models.K8sResource, len(ds))
 	for i, d := range ds {
+		d2 := d // grab a value copy of "d" to enforce block scope heap reference, and avoid shadowing non-block scope "d"
 		dep := &models.K8sResource{
-			Data: &d,
+			Data: &d2,
 		}
 		ret[i] = dep
 	}
@@ -101,8 +103,9 @@ func (rkd *runningK8sData) Events() ([]*models.K8sResource, error) {
 	}
 	ret := make([]*models.K8sResource, len(events))
 	for i, e := range events {
+		e2 := e // grab a value copy of "e" to enforce block scope heap reference, and avoid shadowing non-block scope "e"
 		event := &models.K8sResource{
-			Data: &e,
+			Data: &e2,
 		}
 		ret[i] = event
 	}
@@ -117,8 +120,9 @@ func (rkd *runningK8sData) Nodes() ([]*models.K8sResource, error) {
 	}
 	ret := make([]*models.K8sResource, len(nodes))
 	for i, n := range nodes {
+		n2 := n // grab a value copy of "n" to enforce block scope heap reference, and avoid shadowing non-block scope "n"
 		node := &models.K8sResource{
-			Data: &n,
+			Data: &n2,
 		}
 		ret[i] = node
 	}
@@ -133,8 +137,9 @@ func (rkd *runningK8sData) Pods() ([]*models.K8sResource, error) {
 	}
 	ret := make([]*models.K8sResource, len(pods))
 	for i, p := range pods {
+		p2 := p // grab a value copy of "p" to enforce block scope heap reference, and avoid shadowing non-block scope "p"
 		pod := &models.K8sResource{
-			Data: &p,
+			Data: &p2,
 		}
 		ret[i] = pod
 	}
@@ -149,8 +154,9 @@ func (rkd *runningK8sData) ReplicaSets() ([]*models.K8sResource, error) {
 	}
 	ret := make([]*models.K8sResource, len(rs))
 	for i, r := range rs {
+		r2 := r // grab a value copy of "r" to enforce block scope heap reference, and avoid shadowing non-block scope "r"
 		replicaSet := &models.K8sResource{
-			Data: &r,
+			Data: &r2,
 		}
 		ret[i] = replicaSet
 	}
@@ -165,8 +171,9 @@ func (rkd *runningK8sData) ReplicationControllers() ([]*models.K8sResource, erro
 	}
 	ret := make([]*models.K8sResource, len(rcs))
 	for i, rc := range rcs {
+		rc2 := rc // grab a value copy of "rc" to enforce block scope heap reference, and avoid shadowing non-block scope "rc"
 		replicationController := &models.K8sResource{
-			Data: &rc,
+			Data: &rc2,
 		}
 		ret[i] = replicationController
 	}
@@ -181,8 +188,9 @@ func (rkd *runningK8sData) Services() ([]*models.K8sResource, error) {
 	}
 	ret := make([]*models.K8sResource, len(services))
 	for i, s := range services {
+		s2 := s // grab a value copy of "s" to enforce block scope heap reference, and avoid shadowing non-block scope "s"
 		service := &models.K8sResource{
-			Data: &s,
+			Data: &s2,
 		}
 		ret[i] = service
 	}
