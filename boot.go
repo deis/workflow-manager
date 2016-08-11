@@ -47,6 +47,7 @@ func main() {
 
 	svPeriodic := jobs.NewSendVersionsPeriodic(
 		apiClient,
+		clusterID,
 		deisK8sResources,
 		availableVersion,
 		pollDur,

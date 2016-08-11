@@ -22,6 +22,7 @@ type Periodic interface {
 // SendVersions fulfills the Periodic interface
 type sendVersions struct {
 	k8sResources      *k8s.ResourceInterfaceNamespaced
+	clusterID         data.ClusterID
 	apiClient         *apiclient.WorkflowManager
 	availableVersions data.AvailableVersions
 	frequency         time.Duration
@@ -30,12 +31,14 @@ type sendVersions struct {
 // NewSendVersionsPeriodic creates a new SendVersions using sgc and rcl as the the secret getter / creator and replication controller lister implementations (respectively)
 func NewSendVersionsPeriodic(
 	apiClient *apiclient.WorkflowManager,
+	clusterID data.ClusterID,
 	ri *k8s.ResourceInterfaceNamespaced,
 	availableVersions data.AvailableVersions,
 	frequency time.Duration,
 ) Periodic {
 	return &sendVersions{
 		k8sResources:      ri,
+		clusterID:         clusterID,
 		apiClient:         apiClient,
 		availableVersions: availableVersions,
 		frequency:         frequency,
@@ -45,7 +48,7 @@ func NewSendVersionsPeriodic(
 // Do is the Periodic interface implementation
 func (s sendVersions) Do() error {
 	if config.Spec.CheckVersions {
-		err := sendVersionsImpl(s.apiClient, s.k8sResources, s.availableVersions)
+		err := sendVersionsImpl(s.apiClient, s.clusterID, s.k8sResources, s.availableVersions)
 		if err != nil {
 			return err
 		}
@@ -135,12 +138,13 @@ func DoPeriodic(pSlice []Periodic) chan<- struct{} {
 //  sendVersions sends cluster version data
 func sendVersionsImpl(
 	apiClient *apiclient.WorkflowManager,
+	clusterID data.ClusterID,
 	k8sResources *k8s.ResourceInterfaceNamespaced,
 	availableVersions data.AvailableVersions,
 ) error {
 	cluster, err := data.GetCluster(
 		data.NewInstalledDeisData(k8sResources),
-		data.NewClusterIDFromPersistentStorage(k8sResources.Secrets()),
+		clusterID,
 		data.NewLatestReleasedComponent(k8sResources, availableVersions),
 	)
 	if err != nil {

@@ -51,6 +51,8 @@ func NewClusterIDFromPersistentStorage(sgc k8s.KubeSecretGetterCreator) ClusterI
 
 // Get is the ClusterID interface implementation
 func (c clusterIDFromPersistentStorage) Get() (string, error) {
+	c.rwm.Lock()
+	defer c.rwm.Unlock()
 	secret, err := c.secretGetterCreator.Get(wfmSecretName)
 	//If we don't have the secret we shouldn't be returning error and instead a create a new one
 	if err != nil && !apierrors.IsNotFound(err) {
