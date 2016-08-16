@@ -26,6 +26,10 @@ type Component struct {
 	Min Length: 1
 	*/
 	Name string `json:"name"`
+
+	/* type
+	 */
+	Type *string `json:"type,omitempty"`
 }
 
 // Validate validates this component

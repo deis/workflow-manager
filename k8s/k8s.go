@@ -63,7 +63,7 @@ func NewRunningK8sData(r *ResourceInterfaceNamespaced) RunningK8sData {
 
 // DaemonSets method for runningK8sData
 func (rkd *runningK8sData) DaemonSets() ([]*models.K8sResource, error) {
-	ds, err := getDaemonSets(rkd.daemonSetLister)
+	ds, err := GetDaemonSets(rkd.daemonSetLister)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (rkd *runningK8sData) DaemonSets() ([]*models.K8sResource, error) {
 
 // Deployments method for runningK8sData
 func (rkd *runningK8sData) Deployments() ([]*models.K8sResource, error) {
-	ds, err := getDeployments(rkd.deploymentLister)
+	ds, err := GetDeployments(rkd.deploymentLister)
 	if err != nil {
 		return nil, err
 	}
@@ -269,6 +269,30 @@ func GetServicesModels(k RunningK8sData) ([]*models.K8sResource, error) {
 	return services, nil
 }
 
+// GetDaemonSets is a helper function that returns a slice of
+// DaemonSet objects given a daemonset.Lister interface
+func GetDaemonSets(dLister daemonset.Lister) ([]extensions.DaemonSet, error) {
+	ds, err := dLister.List(api.ListOptions{
+		LabelSelector: labels.Everything(),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return ds.Items, nil
+}
+
+// GetDeployments is a helper function that returns a slice of
+// Deployment objects given a deployment.Lister interface
+func GetDeployments(depsLister deployment.Lister) ([]extensions.Deployment, error) {
+	deps, err := depsLister.List(api.ListOptions{
+		LabelSelector: labels.Everything(),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return deps.Items, nil
+}
+
 // GetReplicationControllers is a helper function that returns a slice of
 // ReplicationController objects given a rc.Lister interface
 func GetReplicationControllers(rcLister rc.Lister) ([]api.ReplicationController, error) {
@@ -303,30 +327,6 @@ func getPods(podLister pod.Lister) ([]api.Pod, error) {
 		return []api.Pod{}, err
 	}
 	return pods.Items, nil
-}
-
-// getDaemonSets is a helper function that returns a slice of
-// DaemonSet objects given a daemonset.Lister interface
-func getDaemonSets(dsLister daemonset.Lister) ([]extensions.DaemonSet, error) {
-	daemonSets, err := dsLister.List(api.ListOptions{
-		LabelSelector: labels.Everything(),
-	})
-	if err != nil {
-		return []extensions.DaemonSet{}, err
-	}
-	return daemonSets.Items, nil
-}
-
-// getDeployments is a helper function that returns a slice of
-// Deployment objects given a deployment.Lister interface
-func getDeployments(dLister deployment.Lister) ([]extensions.Deployment, error) {
-	deployments, err := dLister.List(api.ListOptions{
-		LabelSelector: labels.Everything(),
-	})
-	if err != nil {
-		return []extensions.Deployment{}, err
-	}
-	return deployments.Items, nil
 }
 
 // getEvents is a helper function that returns a slice of

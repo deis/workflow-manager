@@ -11,11 +11,11 @@ import (
 	"github.com/go-swagger/go-swagger/httpkit/validate"
 )
 
-/*Data data
+/*VersionData version data
 
-swagger:model data
+swagger:model versionData
 */
-type Data struct {
+type VersionData struct {
 
 	/* description
 
@@ -28,10 +28,14 @@ type Data struct {
 	Min Length: 1
 	*/
 	Fixes string `json:"fixes,omitempty"`
+
+	/* image
+	 */
+	Image *string `json:"image,omitempty"`
 }
 
-// Validate validates this data
-func (m *Data) Validate(formats strfmt.Registry) error {
+// Validate validates this version data
+func (m *VersionData) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateDescription(formats); err != nil {
@@ -50,7 +54,7 @@ func (m *Data) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Data) validateDescription(formats strfmt.Registry) error {
+func (m *VersionData) validateDescription(formats strfmt.Registry) error {
 
 	if swag.IsZero(m.Description) { // not required
 		return nil
@@ -63,7 +67,7 @@ func (m *Data) validateDescription(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Data) validateFixes(formats strfmt.Registry) error {
+func (m *VersionData) validateFixes(formats strfmt.Registry) error {
 
 	if swag.IsZero(m.Fixes) { // not required
 		return nil

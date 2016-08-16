@@ -19,7 +19,7 @@ type Version struct {
 
 	/* data
 	 */
-	Data *Data `json:"data,omitempty"`
+	Data *VersionData `json:"data,omitempty"`
 
 	/* released
 
@@ -29,10 +29,9 @@ type Version struct {
 
 	/* train
 
-	Required: true
 	Min Length: 1
 	*/
-	Train string `json:"train"`
+	Train string `json:"train,omitempty"`
 
 	/* version
 
@@ -81,8 +80,8 @@ func (m *Version) validateReleased(formats strfmt.Registry) error {
 
 func (m *Version) validateTrain(formats strfmt.Registry) error {
 
-	if err := validate.RequiredString("train", "body", string(m.Train)); err != nil {
-		return err
+	if swag.IsZero(m.Train) { // not required
+		return nil
 	}
 
 	if err := validate.MinLength("train", "body", string(m.Train), 1); err != nil {

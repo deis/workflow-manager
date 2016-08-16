@@ -7,6 +7,14 @@ import (
 	"github.com/deis/workflow-manager/pkg/swagger/models"
 )
 
+var (
+	daemonSetType  = "Daemon Set"
+	deploymentType = "Deployment"
+	rcType         = "Replication Controller"
+)
+
+const versionAnnotation = "component.deis.io/version"
+
 // InstalledData is an interface for managing installed cluster metadata
 type InstalledData interface {
 	// will have a Get method to retrieve installed data
@@ -25,19 +33,62 @@ func NewInstalledDeisData(ri *k8s.ResourceInterfaceNamespaced) InstalledData {
 
 // Get method for InstalledDeisData
 func (g *installedDeisData) Get() ([]byte, error) {
-	rcItems, err := k8s.GetReplicationControllers(g.k8sResources.ReplicationControllers())
+	var cluster models.Cluster
+	deployments, err := k8s.GetDeployments(g.k8sResources.Deployments())
 	if err != nil {
 		return nil, err
 	}
-	var cluster models.Cluster
-	for _, rc := range rcItems {
-		component := models.ComponentVersion{}
-		component.Component = &models.Component{}
-		component.Version = &models.Version{}
-		component.Component.Name = rc.Name
-		desc := rc.Annotations["chart.helm.sh/description"]
-		component.Component.Description = &desc
-		component.Version.Version = rc.Annotations["chart.helm.sh/version"]
+	for _, deployment := range deployments {
+		component := models.ComponentVersion{
+			Component: &models.Component{
+				Name: deployment.Name,
+				Type: &deploymentType,
+			},
+			Version: &models.Version{
+				Version: deployment.Annotations[versionAnnotation],
+				Data: &models.VersionData{
+					Image: &deployment.Spec.Template.Spec.Containers[0].Image,
+				},
+			},
+		}
+		cluster.Components = append(cluster.Components, &component)
+	}
+	daemonSets, err := k8s.GetDaemonSets(g.k8sResources.DaemonSets())
+	if err != nil {
+		return nil, err
+	}
+	for _, daemonSet := range daemonSets {
+		component := models.ComponentVersion{
+			Component: &models.Component{
+				Name: daemonSet.Name,
+				Type: &daemonSetType,
+			},
+			Version: &models.Version{
+				Version: daemonSet.Annotations[versionAnnotation],
+				Data: &models.VersionData{
+					Image: &daemonSet.Spec.Template.Spec.Containers[0].Image,
+				},
+			},
+		}
+		cluster.Components = append(cluster.Components, &component)
+	}
+	replicationControllers, err := k8s.GetReplicationControllers(g.k8sResources.ReplicationControllers())
+	if err != nil {
+		return nil, err
+	}
+	for _, rc := range replicationControllers {
+		component := models.ComponentVersion{
+			Component: &models.Component{
+				Name: rc.Name,
+				Type: &rcType,
+			},
+			Version: &models.Version{
+				Version: rc.Annotations[versionAnnotation],
+				Data: &models.VersionData{
+					Image: &rc.Spec.Template.Spec.Containers[0].Image,
+				},
+			},
+		}
 		cluster.Components = append(cluster.Components, &component)
 	}
 	js, err := json.Marshal(cluster)
