@@ -1,6 +1,7 @@
 # Deis Workflow Manager
 
-[![Build Status](https://travis-ci.org/deis/workflow-manager.svg?branch=master)](https://travis-ci.org/deis/workflow-manager) [![Go Report Card](https://goreportcard.com/badge/github.com/deis/workflow-manager)](https://goreportcard.com/report/github.com/deis/workflow-manager) [![codebeat badge](https://codebeat.co/badges/29e2c379-0490-45db-95fe-20b25bd5a466)](https://codebeat.co/projects/github-com-deis-workflow-manager)
+[![Build Status](https://travis-ci.org/deis/workflow-manager.svg?branch=master)](https://travis-ci.org/deis/workflow-manager) [![codecov](https://codecov.io/gh/deis/workflow-manager/branch/master/graph/badge.svg)](https://codecov.io/gh/deis/workflow-manager)
+ [![Go Report Card](https://goreportcard.com/badge/github.com/deis/workflow-manager)](https://goreportcard.com/report/github.com/deis/workflow-manager) [![codebeat badge](https://codebeat.co/badges/29e2c379-0490-45db-95fe-20b25bd5a466)](https://codebeat.co/projects/github-com-deis-workflow-manager)
 [![Docker Repository on Quay](https://quay.io/repository/deis/workflow-manager/status "Docker Repository on Quay")](https://quay.io/repository/deis/workflow-manager)
 
 This repository contains the manager component for Deis Workflow. Deis

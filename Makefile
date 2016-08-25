@@ -43,7 +43,6 @@ test:
 test-cover:
 	${DEV_ENV_CMD} test-cover.sh
 
-
 test-style:
 	${DEV_ENV_CMD} shellcheck $(SHELL_SCRIPTS)
 
