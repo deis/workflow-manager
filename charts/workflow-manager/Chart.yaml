@@ -1,0 +1,7 @@
+name: workflow-manager
+home: https://github.com/deis/workflow-manager
+version:  <Will be populated by the ci before publishing the chart>
+description: "Deis Workflow Manager: Cluster First Aid"
+maintainers:
+  - name: Deis Team
+    email: engineering@deis.com

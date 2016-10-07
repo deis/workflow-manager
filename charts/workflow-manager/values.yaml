@@ -1,0 +1,7 @@
+org: "deisci"
+pull_policy: "Always"
+docker_tag: canary
+versions_api_url: https://versions-staging.deis.com
+doctor_api_url: https://doctor-staging.deis.com
+# limits_cpu: "100m"
+# limits_memory: "50Mi"
