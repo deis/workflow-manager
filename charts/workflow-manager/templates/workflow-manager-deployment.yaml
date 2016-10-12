@@ -1,0 +1,61 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: deis-workflow-manager
+  labels:
+    heritage: deis
+  annotations:
+    component.deis.io/version: {{ .Values.docker_tag }}
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: deis-workflow-manager
+  template:
+    metadata:
+      labels:
+        app: deis-workflow-manager
+    spec:
+      serviceAccount: deis-workflow-manager
+      containers:
+      - name: deis-workflow-manager
+        image: quay.io/{{.Values.org}}/workflow-manager:{{.Values.docker_tag}}
+        imagePullPolicy: {{.Values.pull_policy}}
+{{- if or (.Values.limits_cpu) (.Values.limits_memory)}}
+        resources:
+          limits:
+{{- if (.Values.limits_cpu) }}
+            cpu: {{.Values.limits_cpu}}
+{{- end}}
+{{- if (.Values.limits_memory) }}
+            memory: {{.Values.limits_memory}}
+{{- end}}
+{{- end}}
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PORT
+          value: "8080"
+        - name: VERSIONS_API_URL
+          value: {{.Values.versions_api_url}}
+        - name: DOCTOR_API_URL
+          value: {{.Values.doctor_api_url}}
+        - name: POLL_INTERVAL_SEC
+          value: "43200"
+        - name: CHECK_VERSIONS
+          value: "true"
+        - name: API_VERSION
+          value: "v2"
+        - name: DEIS_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        ports:
+        - containerPort: 8080
