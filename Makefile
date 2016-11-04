@@ -2,8 +2,8 @@ SHORT_NAME := workflow-manager
 
 include versioning.mk
 
-DEV_ENV_IMAGE := quay.io/deis/go-dev:0.17.0
-SWAGGER_IMAGE := quay.io/goswagger/swagger:0.5.0
+DEV_ENV_IMAGE := quay.io/deis/go-dev:0.20.0
+SWAGGER_IMAGE := quay.io/goswagger/swagger:0.7.3
 DEV_ENV_WORK_DIR := /go/src/github.com/deis/${SHORT_NAME}
 DEV_ENV_CMD := docker run --rm -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR} ${DEV_ENV_IMAGE}
 SWAGGER_CMD := docker run --rm -e GOPATH=/go -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR} ${SWAGGER_IMAGE}
