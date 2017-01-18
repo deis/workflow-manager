@@ -7,6 +7,8 @@ cache:
     - vendor
 services:
   - docker
+env:
+  - DOCKER_BUILD_FLAGS="--pull --no-cache"
 install:
   - make bootstrap
 script:
