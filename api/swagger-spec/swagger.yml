@@ -182,6 +182,52 @@ paths:
           description: unexpected error
           schema:
             $ref: "#/definitions/error"
+  /v3/clusters/checkins:
+    get:
+      operationId: getClusterCheckins
+      summary: "get cluster checkins"
+      parameters:
+        - name: created_after
+          in: query
+          type: string
+          format: date-time
+        - name: created_before
+          in: query
+          type: string
+          format: date-time
+      responses:
+        200:
+          description: clusters count response
+          schema:
+            type: object
+            $ref: "#/definitions/clustersCount"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
+  /v3/clusters/persistent:
+    get:
+      operationId: getPersistentClusters
+      summary: "get persistent clusters"
+      parameters:
+        - name: epoch
+          in: query
+          type: string
+          format: date-time
+        - name: timestamp
+          in: query
+          type: string
+          format: date-time
+      responses:
+        200:
+          description: clusters details response
+          schema:
+            type: object
+            $ref: "#/definitions/clustersCount"
+        default:
+          description: unexpected error
+          schema:
+            $ref: "#/definitions/error"
   /v3/clusters/{id}:
     get:
       operationId: getClusterById
@@ -316,6 +362,42 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/componentVersion"
+  clusterCheckin:
+    type: object
+    required:
+      - clusterID
+      - firstSeen
+      - lastSeen
+      - clusterAge
+      - checkins
+    properties:
+      clusterID:
+        type: string
+        minLength: 1
+      firstSeen:
+        type: string
+        minLength: 1
+      lastSeen:
+        type: string
+        minLength: 1
+      clusterAge:
+        type: string
+        minLength: 1
+      lastCheckin:
+        type: string
+        minLength: 1
+      checkins:
+        type: integer
+  clustersCount:
+    type: object
+    properties:
+      count:
+        type: integer
+        format: int64
+      data:
+        type: array
+        items:
+          $ref: "#/definitions/clusterCheckin"
   k8sResource:
     type: object
     required:
